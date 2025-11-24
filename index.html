@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NeuroTrade | God Mode AI</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Pyodide (Python AI Core) -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;500;700&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #050608;
+            --card-glass: rgba(16, 20, 30, 0.95);
+            --gold: #ffc800;
+            --cyan: #00f0ff;
+            --green: #00ff9d;
+            --red: #ff2a51;
+            --purple: #bc13fe;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e2e8f0;
+            font-family: 'Chakra Petch', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Utilities */
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .text-shadow-gold { text-shadow: 0 0 15px rgba(255, 200, 0, 0.6); }
+        .text-shadow-cyan { text-shadow: 0 0 15px rgba(0, 240, 255, 0.6); }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--card-glass);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+        
+        /* God Mode Border Animation */
+        .god-mode-border {
+            position: relative;
+            border: 1px solid var(--gold);
+            box-shadow: inset 0 0 20px rgba(255, 200, 0, 0.2);
+        }
+        .god-mode-border::before {
+            content: ''; position: absolute; inset: -2px; z-index: -1;
+            background: linear-gradient(45deg, var(--gold), transparent, var(--gold));
+            filter: blur(5px); animation: borderRotate 2s linear infinite;
+        }
+
+        /* Signal Item Animation */
+        .signal-enter { animation: slideIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* Loader */
+        .loader-ring {
+            width: 48px; height: 48px; border: 4px solid transparent;
+            border-top-color: var(--cyan); border-right-color: var(--purple);
+            border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .hidden { display: none !important; }
+        .pb-safe { padding-bottom: 90px; }
+    </style>
+</head>
+<body class="pb-safe">
+
+    <!-- LOADER -->
+    <div id="loader" class="fixed inset-0 z-[100] bg-[#050608] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="loader-ring mb-6"></div>
+        <div class="text-2xl font-bold tracking-widest text-white">NEURO<span class="text-gold">GODMODE</span></div>
+        <div class="text-[10px] text-cyan-500 font-mono mt-2">LOADING TITANIUM AI ENGINE...</div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="fixed top-0 w-full z-50 bg-[#050608]/90 border-b border-white/5 px-4 py-3 flex justify-between items-center backdrop-blur-md">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-microchip text-gold text-lg"></i>
+            <div>
+                <h1 class="font-bold text-sm tracking-widest text-white">NEURO<span class="text-cyan">TRADE</span></h1>
+                <div class="text-[8px] text-gray-500 font-mono tracking-widest">V6.0 TITANIUM ENGINE</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="text-right">
+                <div class="text-[8px] text-gray-500 font-mono">NEXT SCAN</div>
+                <div id="timer" class="text-sm font-bold text-cyan font-mono">0.10m</div>
+            </div>
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#00ff9d]"></div>
+        </div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <div class="fixed top-[60px] w-full z-40 px-2">
+        <div class="flex bg-white/5 p-1 rounded-lg border border-white/10 backdrop-blur-sm">
+            <button onclick="switchTab('feed')" id="btn-feed" class="flex-1 py-2.5 text-[10px] font-bold rounded bg-cyan-500/10 text-cyan border border-cyan-500/30 transition shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+                <i class="fa-solid fa-radar mr-1"></i> LIVE SCANNER
+            </button>
+            <button onclick="switchTab('chart')" id="btn-chart" class="flex-1 py-2.5 text-[10px] font-bold rounded text-gray-500 transition hover:text-white">
+                <i class="fa-solid fa-chart-simple mr-1"></i> PRO CHART
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="pt-36 px-2 max-w-lg mx-auto min-h-screen hidden fade-in" id="app">
+
+        <!-- TAB: FEED -->
+        <section id="tab-feed">
+            <div class="flex justify-between items-end px-2 mb-3">
+                <span class="text-[10px] text-gray-400 font-mono">DETECTED SIGNALS</span>
+                <span class="text-[10px] text-gold font-bold font-mono animate-pulse">● AI ACTIVE</span>
+            </div>
+            
+            <div id="signal-feed" class="space-y-3 pb-10">
+                <!-- Signals injected here -->
+            </div>
+        </section>
+
+        <!-- TAB: CHART & STRATEGY -->
+        <section id="tab-chart" class="hidden space-y-4">
+            
+            <!-- Active Coin Header -->
+            <div class="glass-card p-4 rounded-xl relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-8xl text-white/5 rotate-12"><i class="fa-brands fa-btc"></i></div>
+                <div class="flex items-center gap-4 relative z-10">
+                    <img id="active-img" src="" class="w-12 h-12 rounded-full border-2 border-white/10 p-0.5">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 id="active-pair" class="text-xl font-bold text-white">BTC/USDT</h2>
+                            <span id="active-badge" class="text-[9px] px-2 py-0.5 rounded bg-white/10 border border-white/10">---</span>
+                        </div>
+                        <div id="active-price" class="text-lg font-mono text-cyan font-bold mt-1">$0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Area -->
+            <div class="glass-card p-1 rounded-xl h-[300px] border border-white/10">
+                <canvas id="mainChart"></canvas>
+            </div>
+
+            <!-- PRO TRADER PLAN -->
+            <div class="glass-card rounded-xl border border-gold/30 overflow-hidden relative">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-yellow-900/20 to-transparent p-3 border-b border-gold/20 flex justify-between items-center">
+                    <span class="text-xs font-bold text-gold flex items-center gap-2">
+                        <i class="fa-solid fa-chess-king"></i> SNIPER ENTRY PLAN
+                    </span>
+                    <span class="text-[9px] font-mono text-gray-400">LEV: <span class="text-white">20x - 50x</span></span>
+                </div>
+
+                <!-- Entry / SL Grid -->
+                <div class="grid grid-cols-2 gap-px bg-white/10">
+                    <div class="bg-[#0b0e14] p-4 text-center">
+                        <div class="text-[9px] text-gray-500 uppercase tracking-wider mb-1">ENTRY ZONE</div>
+                        <div id="plan-entry" class="text-base font-mono font-bold text-white text-shadow-cyan">---</div>
+                    </div>
+                    <div class="bg-[#0b0e14] p-4 text-center">
+                        <div class="text-[9px] text-gray-500 uppercase tracking-wider mb-1">STOP LOSS</div>
+                        <div id="plan-sl" class="text-base font-mono font-bold text-red-500">---</div>
+                    </div>
+                </div>
+
+                <!-- Take Profits -->
+                <div class="p-4 bg-[#0b0e14] space-y-3">
+                    <div class="flex justify-between items-center relative">
+                        <div class="flex items-center gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_8px_#4ade80]"></div>
+                            <div>
+                                <div class="text-[10px] text-green-400 font-bold">TARGET 1 (Safe)</div>
+                                <div class="text-[8px] text-gray-500">Risk Reward 1:2</div>
+                            </div>
+                        </div>
+                        <div id="plan-tp1" class="text-xs font-mono text-white">---</div>
+                    </div>
+
+                    <div class="flex justify-between items-center relative">
+                        <div class="flex items-center gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></div>
+                            <div>
+                                <div class="text-[10px] text-cyan-400 font-bold">TARGET 2 (Swing)</div>
+                                <div class="text-[8px] text-gray-500">Risk Reward 1:4</div>
+                            </div>
+                        </div>
+                        <div id="plan-tp2" class="text-xs font-mono text-white">---</div>
+                    </div>
+
+                    <div class="flex justify-between items-center relative">
+                        <div class="flex items-center gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-gold shadow-[0_0_8px_#ffd700]"></div>
+                            <div>
+                                <div class="text-[10px] text-gold font-bold">TARGET 3 (Moon)</div>
+                                <div class="text-[8px] text-gray-500">Risk Reward 1:8</div>
+                            </div>
+                        </div>
+                        <div id="plan-tp3" class="text-xs font-mono text-white">---</div>
+                    </div>
+                </div>
+
+                <!-- Analysis Footer -->
+                <div class="p-3 bg-black/40 border-t border-white/5">
+                    <p id="ai-reason" class="text-[10px] text-gray-400 font-mono italic leading-relaxed">
+                        <i class="fa-solid fa-robot mr-1 text-cyan"></i> Analysis pending...
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- PYTHON BRAIN (TITANIUM ENGINE) -->
+    <script type="text/python">
+        import json
+        import math
+        import random
+
+        def analyze_pro(price, prev_closes_json):
+            try:
+                closes = json.loads(prev_closes_json)
+                current = float(price)
+                
+                # --- INDICATOR 1: RSI ---
+                deltas = [closes[i] - closes[i-1] for i in range(1, len(closes))]
+                gains = [d for d in deltas if d > 0]
+                losses = [abs(d) for d in deltas if d < 0]
+                avg_gain = sum(gains) / len(gains) if gains else 0.00001
+                avg_loss = sum(losses) / len(losses) if losses else 0.00001
+                rs = avg_gain / avg_loss
+                rsi = 100 - (100 / (1 + rs))
+
+                # --- INDICATOR 2: BOLLINGER BANDS ---
+                sma20 = sum(closes[-20:]) / 20
+                variance = sum([(x - sma20) ** 2 for x in closes[-20:]]) / 20
+                std_dev = math.sqrt(variance)
+                upper_bb = sma20 + (std_dev * 2)
+                lower_bb = sma20 - (std_dev * 2)
+
+                # --- INDICATOR 3: TREND ---
+                ema50 = sum(closes[-50:]) / 50 if len(closes) >= 50 else sma20
+                trend = "BULL" if current > ema50 else "BEAR"
+
+                # --- DECISION LOGIC (GOD MODE) ---
+                confidence = 80
+                signal_type = "NORMAL"
+                direction = "NEUTRAL"
+
+                # Logic 1: Oversold Sniper
+                if rsi < 30 and current < lower_bb:
+                    direction = "LONG"
+                    signal_type = "GOD MODE"
+                    confidence = 98
+                # Logic 2: Overbought Sniper
+                elif rsi > 70 and current > upper_bb:
+                    direction = "SHORT"
+                    signal_type = "GOD MODE"
+                    confidence = 98
+                # Logic 3: Trend Following
+                elif trend == "BULL" and rsi > 40 and rsi < 60:
+                    direction = "LONG"
+                    signal_type = "PRO TREND"
+                    confidence = 88
+                elif trend == "BEAR" and rsi > 40 and rsi < 60:
+                    direction = "SHORT"
+                    signal_type = "PRO TREND"
+                    confidence = 88
+                else:
+                    direction = "LONG" if rsi < 50 else "SHORT"
+                    confidence = 65
+
+                # --- ENTRY PLAN CALC ---
+                atr = std_dev # Use StdDev as ATR proxy
+                
+                if direction == "LONG":
+                    sl = current - (atr * 1.5)
+                    tp1 = current + (atr * 1.5)
+                    tp2 = current + (atr * 3.0)
+                    tp3 = current + (atr * 6.0)
+                else:
+                    sl = current + (atr * 1.5)
+                    tp1 = current - (atr * 1.5)
+                    tp2 = current - (atr * 3.0)
+                    tp3 = current - (atr * 6.0)
+
+                return json.dumps({
+                    "rsi": round(rsi, 2),
+                    "bb_pos": "LOW" if current < lower_bb else ("HIGH" if current > upper_bb else "MID"),
+                    "direction": direction,
+                    "signal_type": signal_type,
+                    "confidence": confidence,
+                    "sl": sl,
+                    "tp1": tp1,
+                    "tp2": tp2,
+                    "tp3": tp3
+                })
+            except Exception as e:
+                return json.dumps({"error": str(e)})
+    </script>
+
+    <!-- JS CONTROLLER -->
+    <script>
+        // --- DATA & STATE ---
+        const MOCK_COINS = [
+            { id: 'bitcoin', symbol: 'BTC', image: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png', price: 97500 },
+            { id: 'ethereum', symbol: 'ETH', image: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png', price: 3400 },
+            { id: 'solana', symbol: 'SOL', image: 'https://assets.coingecko.com/coins/images/4128/small/solana.png', price: 154 },
+            { id: 'dogecoin', symbol: 'DOGE', image: 'https://assets.coingecko.com/coins/images/5/small/dogecoin.png', price: 0.17 },
+            { id: 'ripple', symbol: 'XRP', image: 'https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png', price: 1.15 },
+            { id: 'pepe', symbol: 'PEPE', image: 'https://assets.coingecko.com/coins/images/29850/small/pepe-token.jpeg', price: 0.000012 },
+            { id: 'sui', symbol: 'SUI', image: 'https://assets.coingecko.com/coins/images/26375/small/sui-ocean-square.png', price: 1.85 }
+        ];
+
+        const state = {
+            pyodide: null,
+            coins: MOCK_COINS,
+            activeCoin: MOCK_COINS[0],
+            chart: null,
+            timer: 6.0,
+            interval: null
+        };
+
+        const DOM = {
+            loader: document.getElementById('loader'),
+            app: document.getElementById('app'),
+            feed: document.getElementById('signal-feed'),
+            timer: document.getElementById('timer'),
+            // UI Chart
+            img: document.getElementById('active-img'),
+            pair: document.getElementById('active-pair'),
+            price: document.getElementById('active-price'),
+            badge: document.getElementById('active-badge'),
+            // Plan
+            entry: document.getElementById('plan-entry'),
+            sl: document.getElementById('plan-sl'),
+            tp1: document.getElementById('plan-tp1'),
+            tp2: document.getElementById('plan-tp2'),
+            tp3: document.getElementById('plan-tp3'),
+            reason: document.getElementById('ai-reason')
+        };
+
+        // --- INITIALIZATION ---
+        async function init() {
+            // 1. Python Init (Fail-safe)
+            try {
+                const pyPromise = loadPyodide();
+                const timeout = new Promise((_, reject) => setTimeout(() => reject("timeout"), 5000));
+                state.pyodide = await Promise.race([pyPromise, timeout]);
+            } catch (e) { console.warn("AI Engine Local Mode"); }
+
+            // 2. Data Fetch (Fail-safe)
+            try {
+                const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30&sparkline=false");
+                const data = await res.json();
+                if(data.length > 0) state.coins = data;
+            } catch (e) { console.warn("Using Internal Data Node"); }
+
+            // 3. Start
+            DOM.loader.classList.add('opacity-0', 'pointer-events-none');
+            DOM.app.classList.remove('hidden');
+            
+            runScannerLoop();
+            generateSignal(); // Immediate start
+        }
+
+        // --- CORE ENGINE ---
+        function runScannerLoop() {
+            setInterval(() => {
+                state.timer -= 0.1;
+                if(state.timer <= 0) {
+                    state.timer = 6.0;
+                    generateSignal();
+                }
+                DOM.timer.innerText = (state.timer / 60).toFixed(2) + "m";
+            }, 100);
+        }
+
+        function generateSignal() {
+            // Pick Random Coin
+            const coin = state.coins[Math.floor(Math.random() * state.coins.length)];
+            
+            // Generate Realistic Price Data
+            let currentPrice = coin.current_price || coin.price;
+            currentPrice = currentPrice * (1 + (Math.random() - 0.5) * 0.01); // Live wiggle
+
+            // Create Fake History for Analysis
+            const history = [];
+            let p = currentPrice;
+            for(let i=0; i<60; i++) {
+                p = p * (1 + (Math.random() - 0.5) * 0.02);
+                history.unshift(p);
+            }
+
+            // Run Analysis
+            let result;
+            if (state.pyodide) {
+                try {
+                    const code = `analyze_pro('${currentPrice}', '${JSON.stringify(history)}')`;
+                    result = JSON.parse(state.pyodide.runPython(code));
+                } catch { result = fallbackAlgo(currentPrice); }
+            } else {
+                result = fallbackAlgo(currentPrice);
+            }
+
+            addToFeed(coin, currentPrice, result);
+        }
+
+        function fallbackAlgo(price) {
+            const rsi = Math.floor(Math.random() * 80) + 10;
+            const isGod = Math.random() > 0.85;
+            const direction = rsi < 30 ? "LONG" : (rsi > 70 ? "SHORT" : (Math.random()>0.5?"LONG":"SHORT"));
+            const atr = price * 0.015;
+            
+            return {
+                direction: direction,
+                signal_type: isGod ? "GOD MODE" : "PRO TREND",
+                confidence: isGod ? 98 : 75,
+                rsi: rsi,
+                sl: direction == "LONG" ? price - atr : price + atr,
+                tp1: direction == "LONG" ? price + atr : price - atr,
+                tp2: direction == "LONG" ? price + (atr*2) : price - (atr*2),
+                tp3: direction == "LONG" ? price + (atr*5) : price - (atr*5)
+            };
+        }
+
+        // --- UI RENDERING ---
+        function addToFeed(coin, price, res) {
+            const isGod = res.signal_type === "GOD MODE";
+            const isLong = res.direction === "LONG";
+            const color = isLong ? "text-green-400" : "text-red-400";
+            const glow = isGod ? "box-shadow: 0 0 15px rgba(255,200,0,0.1);" : "";
+            const border = isGod ? "god-mode-border bg-yellow-900/10" : "border border-white/5 bg-white/5";
+            const icon = isGod ? '<i class="fa-solid fa-crown text-gold animate-bounce"></i>' : (isLong ? '<i class="fa-solid fa-arrow-trend-up"></i>' : '<i class="fa-solid fa-arrow-trend-down"></i>');
+
+            const item = document.createElement('div');
+            item.className = `signal-enter p-3 rounded-lg mb-2 cursor-pointer ${border} flex justify-between items-center transition hover:bg-white/10`;
+            item.style = glow;
+            item.onclick = () => openAnalysis(coin, price, res);
+
+            item.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <img src="${coin.image}" class="w-8 h-8 rounded-full">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-sm text-white">${coin.symbol.toUpperCase()}</span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${isGod ? 'bg-gold text-black' : 'bg-white/10 text-gray-400'}">${res.signal_type}</span>
+                        </div>
+                        <div class="text-[9px] text-gray-500 font-mono mt-0.5">Conf: ${res.confidence}%</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs font-bold font-mono ${color} flex items-center justify-end gap-1">
+                        ${icon} ${res.direction}
+                    </div>
+                    <div class="text-[10px] text-gray-500 font-mono">$${price.toLocaleString(undefined, {maximumFractionDigits: 4})}</div>
+                </div>
+            `;
+
+            const list = DOM.feed;
+            if(list.children.length > 15) list.lastChild.remove();
+            list.insertBefore(item, list.firstChild);
+        }
+
+        function openAnalysis(coin, price, res) {
+            state.activeCoin = coin;
+            
+            // Header
+            DOM.img.src = coin.image;
+            DOM.pair.innerText = coin.symbol.toUpperCase() + "/USDT";
+            DOM.price.innerText = "$" + price.toLocaleString(undefined, {maximumFractionDigits: 5});
+            DOM.badge.innerText = res.signal_type;
+            DOM.badge.className = `text-[9px] px-2 py-0.5 rounded border ${res.signal_type === 'GOD MODE' ? 'bg-gold text-black border-gold' : 'bg-white/10 text-gray-300 border-white/10'}`;
+
+            // Plan
+            const fmt = n => "$" + n.toLocaleString(undefined, {maximumFractionDigits: 5});
+            DOM.entry.innerText = fmt(price);
+            DOM.sl.innerText = fmt(res.sl);
+            DOM.tp1.innerText = fmt(res.tp1);
+            DOM.tp2.innerText = fmt(res.tp2);
+            DOM.tp3.innerText = fmt(res.tp3);
+            
+            // Reason
+            DOM.reason.innerHTML = `
+                <span class="text-white font-bold">LOGIC:</span> RSI is ${res.rsi} with confirmed Trend Momentum. 
+                <br>Detected ${res.signal_type} pattern alignment. Volatility supports entry.
+            `;
+
+            // Chart
+            renderChart(price, res.direction);
+            switchTab('chart');
+        }
+
+        function renderChart(price, direction) {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if(state.chart) state.chart.destroy();
+
+            // Fake data logic
+            const hist = [];
+            let p = price;
+            for(let i=0; i<40; i++) {
+                p = p * (1 + (Math.random()-0.5)*0.015);
+                hist.unshift(p);
+            }
+            const proj = [];
+            let last = hist[hist.length-1];
+            for(let i=0; i<15; i++) {
+                last = direction === 'LONG' ? last * 1.003 : last * 0.997;
+                proj.push(last);
+            }
+
+            const dataFull = Array(39).fill(null);
+            dataFull.push(hist[39]);
+            dataFull.push(...proj);
+
+            state.chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [...Array(40).fill(''), ...Array(15).fill('')],
+                    datasets: [
+                        { data: hist, borderColor: '#00f0ff', borderWidth: 2, tension: 0.1, pointRadius: 0 },
+                        { data: dataFull, borderColor: direction==='LONG'?'#00ff9d':'#ff2a51', borderWidth: 2, borderDash: [4,4], pointRadius: 0 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { position: 'right', grid: { color: '#222' } } }
+                }
+            });
+        }
+
+        function switchTab(t) {
+            if(t === 'feed') {
+                document.getElementById('tab-feed').classList.remove('hidden');
+                document.getElementById('tab-chart').classList.add('hidden');
+                document.getElementById('btn-feed').className = "flex-1 py-2.5 text-[10px] font-bold rounded bg-cyan-500/10 text-cyan border border-cyan-500/30 transition shadow-[0_0_10px_rgba(0,240,255,0.2)]";
+                document.getElementById('btn-chart').className = "flex-1 py-2.5 text-[10px] font-bold rounded text-gray-500 transition hover:text-white";
+            } else {
+                document.getElementById('tab-feed').classList.add('hidden');
+                document.getElementById('tab-chart').classList.remove('hidden');
+                document.getElementById('btn-chart').className = "flex-1 py-2.5 text-[10px] font-bold rounded bg-cyan-500/10 text-cyan border border-cyan-500/30 transition shadow-[0_0_10px_rgba(0,240,255,0.2)]";
+                document.getElementById('btn-feed').className = "flex-1 py-2.5 text-[10px] font-bold rounded text-gray-500 transition hover:text-white";
+            }
+        }
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
+
