@@ -2,431 +2,418 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLOOD_TERMINAL | LIVE API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CRIMSON x DEEPSEEK</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        blood: {
-                            500: '#f44336',
-                            700: '#d32f2f',
-                            900: '#7f0000',
-                            950: '#2a0a0a',
-                            dark: '#0f0202',
-                            void: '#000000'
-                        },
-                        neon: {
-                            red: '#ff0033',
-                            green: '#00ff9d',
-                        }
-                    },
-                    fontFamily: {
-                        mono: ['Courier New', 'monospace'],
-                        sans: ['Roboto', 'sans-serif']
-                    },
-                    animation: {
-                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'flash': 'flash 0.5s ease-out forwards',
-                    },
-                    keyframes: {
-                        flash: {
-                            '0%': { opacity: '0', transform: 'translateX(-20px)' },
-                            '100%': { opacity: '1', transform: 'translateX(0)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    
+    <!-- Pyodide (DeepSeek Engine) -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bg-deep: #030005;
+            --deepseek-blue: #3b82f6;
+            --crimson-red: #ff0033;
+            --neon-purple: #a855f7;
+            --card-bg: linear-gradient(145deg, #0a0105, #020002);
+        }
+
         body {
-            background-color: #000000;
-            background-image: linear-gradient(rgba(10, 0, 0, 0.95), rgba(0, 0, 0, 1));
+            background-color: var(--bg-deep);
             color: #e0e0e0;
-            overflow: hidden; /* App-like feel */
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- DEEPSEEK ANIMATIONS --- */
+        @keyframes neural-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        @keyframes data-stream {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .deep-border {
+            position: relative;
+        }
+        .deep-border::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, var(--crimson-red), var(--deepseek-blue), var(--crimson-red));
+            background-size: 200% 200%;
+            animation: data-stream 2s linear infinite;
+        }
+
+        /* CARD STYLES */
+        .intel-card {
+            background: var(--card-bg);
+            border: 1px solid #2a0a1a;
+            border-left: 4px solid var(--crimson-red);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
         }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #0a0000; }
-        ::-webkit-scrollbar-thumb { background: #7f0000; border-radius: 2px; }
-
-        .sidebar-glass {
-            background: rgba(15, 2, 2, 0.95);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid #330000;
+        .intel-card.deep-mode {
+            border-left-color: var(--deepseek-blue);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
         }
 
-        .coin-item {
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .coin-item:hover {
-            background: rgba(255, 0, 51, 0.1);
+        .reasoning-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-top: 1px solid #1f1f1f;
+            margin-top: 8px;
+            padding-top: 4px;
         }
 
-        .signal-card {
-            border-left: 4px solid #333;
-            background: linear-gradient(90deg, #120303 0%, #050000 100%);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        .profit-badge {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--deepseek-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
         }
-        
-        .signal-card.long { border-left-color: #00ff9d; }
-        .signal-card.short { border-left-color: #ff0033; }
 
-        .indicator-box {
-            font-size: 9px;
-            padding: 2px 4px;
-            border-radius: 2px;
-            border: 1px solid #333;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        /* HEADER */
+        .cyber-header {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(3, 0, 5, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #222;
+            padding: 10px;
         }
-        .pass { border-color: #00ff9d; color: #00ff9d; background: rgba(0, 255, 157, 0.05); }
-        .fail { border-color: #ff0033; color: #ff0033; background: rgba(255, 0, 51, 0.05); }
 
-        .loader {
-            border: 2px solid #330000;
-            border-top: 2px solid #ff0033;
+        .search-bar {
+            width: 100%; background: #0c0508; border: 1px solid #331122;
+            color: white; padding: 10px; font-family: 'Rajdhani', sans-serif;
+            font-weight: 700; outline: none; border-radius: 4px;
+            transition: 0.3s;
+        }
+        .search-bar:focus { border-color: var(--deepseek-blue); }
+
+        /* LOADER */
+        .brain-loader {
+            width: 50px; height: 50px;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2I4MmY2IiBzdHJva2Utd2lkdGg9IjIiPjxwYXRoIGQ9Ik05LjUgMmEyLjUgMi41IDAgMDxMIDE0LjUgMmEyLjUgMi41IDAgMDFDIi8+PC9zdmc+'); /* Simplified for demo */
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
+            border: 2px solid transparent;
+            border-top-color: var(--deepseek-blue);
+            border-bottom-color: var(--crimson-red);
+            animation: spin 1s infinite linear;
+            margin: 0 auto;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="h-screen flex flex-col font-sans">
+<body class="pb-20">
 
-    <!-- Header -->
-    <header class="h-14 bg-blood-void border-b border-blood-900 flex items-center justify-between px-4 z-50 shrink-0">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-droplet text-blood-500 animate-pulse"></i>
-            <h1 class="text-lg font-black tracking-widest text-white">BLOOD<span class="text-blood-500">_TERMINAL</span></h1>
-        </div>
-        <div class="flex items-center gap-4 text-xs font-mono">
-            <div id="fearGreed" class="hidden md:flex items-center gap-2 text-gray-400">
-                F&G: <span class="text-white">...</span>
-            </div>
+    <!-- HEADER -->
+    <div class="cyber-header deep-border">
+        <div class="flex justify-between items-center mb-3">
+            <h1 class="text-xl font-bold text-white font-[Orbitron]">
+                CRIMSON <span class="text-blue-500 text-xs align-top">DEEPSEEK</span>
+            </h1>
             <div class="flex items-center gap-2">
-                <div class="loader" id="apiLoader"></div>
-                <span class="text-green-500">LIVE API</span>
+                <span class="text-[9px] text-gray-500 font-bold">INTELLIGENCE ACTIVE</span>
+                <span class="w-2 h-2 rounded-full bg-blue-500" style="animation: neural-pulse 2s infinite"></span>
             </div>
         </div>
-    </header>
-
-    <div class="flex flex-1 overflow-hidden">
         
-        <!-- SIDEBAR: Market Watch (Screenshot Style) -->
-        <aside class="w-80 sidebar-glass flex flex-col shrink-0 transform -translate-x-full md:translate-x-0 transition-transform absolute md:relative h-full z-40" id="sidebar">
-            <!-- Tabs -->
-            <div class="flex border-b border-blood-900 bg-black/50">
-                <button onclick="switchTab('gainers')" class="flex-1 py-3 text-xs font-bold text-white border-b-2 border-blood-500 tab-btn" id="tab-gainers">Gainers</button>
-                <button onclick="switchTab('losers')" class="flex-1 py-3 text-xs font-bold text-gray-500 hover:text-white tab-btn" id="tab-losers">Losers</button>
-                <button onclick="switchTab('hot')" class="flex-1 py-3 text-xs font-bold text-gray-500 hover:text-white tab-btn" id="tab-hot">Hot</button>
-            </div>
-
-            <!-- Column Headers -->
-            <div class="flex justify-between px-4 py-2 text-[10px] text-gray-500 uppercase font-mono bg-black/20">
-                <span>Name</span>
-                <div class="flex gap-8">
-                    <span>Price</span>
-                    <span>Chg%</span>
-                </div>
-            </div>
-
-            <!-- List Container -->
-            <div class="flex-1 overflow-y-auto" id="marketList">
-                <!-- Coins will load here -->
-                <div class="p-4 text-center text-gray-600 text-xs">Loading Market Data...</div>
-            </div>
-        </aside>
-
-        <!-- Toggle Button for Mobile -->
-        <button onclick="toggleSidebar()" class="md:hidden absolute bottom-4 left-4 z-50 bg-blood-700 p-3 rounded-full shadow-lg text-white">
-            <i class="fa-solid fa-list"></i>
-        </button>
-
-        <!-- MAIN FEED: Signals -->
-        <main class="flex-1 bg-black relative flex flex-col">
-            
-            <!-- Signal Scanner Status -->
-            <div class="h-10 bg-blood-950/30 border-b border-blood-900/50 flex items-center justify-center gap-2 text-[10px] text-blood-500 font-mono tracking-wider">
-                <i class="fa-solid fa-crosshairs"></i>
-                <span id="scanStatus">SCANNING MARKET DEPTH & VOL...</span>
-            </div>
-
-            <!-- Feed Container -->
-            <div class="flex-1 overflow-y-auto p-4 max-w-3xl mx-auto w-full" id="signalFeed">
-                <!-- Signals Injected Here -->
-            </div>
-
-        </main>
+        <div class="relative">
+            <input type="text" id="searchInput" class="search-bar" placeholder="SEARCH ASSET / USDT..." onkeyup="filterSignals()">
+            <i class="fa-solid fa-microchip absolute right-3 top-3 text-blue-900"></i>
+        </div>
     </div>
 
+    <!-- FEED -->
+    <div id="signal-feed" class="p-3 min-h-screen">
+        <div id="loader" class="text-center mt-32">
+            <div class="brain-loader mb-4"></div>
+            <p class="text-xs text-blue-500 font-mono">LOADING DEEPSEEK MODELS...</p>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="fixed bottom-0 w-full bg-[#030005] border-t border-[#222] flex justify-around py-3 z-50">
+        <button class="flex flex-col items-center text-blue-500" onclick="location.reload()">
+            <i class="fa-solid fa-brain text-lg"></i>
+            <span class="text-[9px] mt-1">ANALYSIS</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-600">
+            <i class="fa-solid fa-chart-simple text-lg"></i>
+            <span class="text-[9px] mt-1">MARKET</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-600">
+            <i class="fa-solid fa-newspaper text-lg"></i>
+            <span class="text-[9px] mt-1">NEWS</span>
+        </button>
+    </div>
+
+    <!-- DEEPSEEK LOGIC (PYTHON) -->
+    <script type="text/javascript">
+        const deepLogic = `
+import json
+import math
+
+# --- CORE INDICATORS ---
+def rsi(prices, period=14):
+    if len(prices) < period + 1: return 50
+    deltas = [prices[i+1] - prices[i] for i in range(len(prices)-1)]
+    gains = [d if d > 0 else 0 for d in deltas]
+    losses = [-d if d < 0 else 0 for d in deltas]
+    avg_g = sum(gains[:period]) / period
+    avg_l = sum(losses[:period]) / period
+    if avg_l == 0: return 100
+    rs = avg_g / avg_l
+    return 100 - (100 / (1 + rs))
+
+def ema(prices, period):
+    if len(prices) < period: return 0
+    k = 2 / (period + 1)
+    ema = sum(prices[:period]) / period
+    for p in prices[period:]:
+        ema = (p * k) + (ema * (1 - k))
+    return ema
+
+def atr(prices, period=14):
+    if len(prices) < period + 1: return 0
+    tr_sum = 0
+    for i in range(1, len(prices)):
+        high = prices[i] # Simplified (Close as High approximation for demo)
+        low = prices[i]
+        prev_close = prices[i-1]
+        # True Range simplified for Close-only data
+        tr = abs(high - prev_close) 
+        tr_sum += tr
+    return tr_sum / period
+
+# --- DEEPSEEK ANALYSIS ENGINE ---
+def deep_analyze(symbol, prices_json):
+    prices = json.loads(prices_json)
+    if len(prices) < 60: return json.dumps({"valid": False})
+    
+    current = prices[-1]
+    
+    # 1. CALCULATE DEEP METRICS
+    val_rsi = rsi(prices, 14)
+    val_ema9 = ema(prices, 9)
+    val_ema21 = ema(prices, 21)
+    val_ema50 = ema(prices, 50)
+    val_atr = atr(prices, 14)
+    
+    # Volatility Check (Is the market moving?)
+    volatility = val_atr / current
+    
+    signal = "NONE"
+    timeframe = "15M" # Default
+    reason = "Scanning..."
+    conf = 0
+    
+    # --- LOGIC LAYER: 70% BIAS TO 5M-15M ---
+    
+    # SETUP 1: 5M MOMENTUM (Scalp) - High Priority
+    if val_ema9 > val_ema21 and val_rsi > 55 and val_rsi < 75:
+        if volatility > 0.002: # Ensure enough movement
+            signal = "LONG"
+            timeframe = "5M"
+            reason = "Vol. Spike + EMA Align"
+            conf = 88
+    elif val_ema9 < val_ema21 and val_rsi < 45 and val_rsi > 25:
+        if volatility > 0.002:
+            signal = "SHORT"
+            timeframe = "5M"
+            reason = "Vol. Spike + EMA Align"
+            conf = 88
+
+    # SETUP 2: 15M TREND (Swing) - Medium Priority
+    # Only verify if 5M didn't trigger to allow overwriting with stronger signals
+    if signal == "NONE":
+        if current > val_ema21 and val_ema21 > val_ema50:
+            signal = "LONG"
+            timeframe = "15M"
+            reason = "Trend Continuation Structure"
+            conf = 85
+        elif current < val_ema21 and val_ema21 < val_ema50:
+            signal = "SHORT"
+            timeframe = "15M"
+            reason = "Trend Breakdown Structure"
+            conf = 85
+
+    # If still NONE, check simple oversold (30% remaining cases)
+    if signal == "NONE":
+        if val_rsi < 25: 
+            signal = "LONG"; timeframe="REVERSAL"; reason="Deep Oversold (RSI < 25)"; conf=75
+        elif val_rsi > 75:
+            signal = "SHORT"; timeframe="REVERSAL"; reason="Deep Overbought (RSI > 75)"; conf=75
+
+    if signal == "NONE": return json.dumps({"valid": False})
+
+    # --- TARGET CALCULATION (30% PROFIT LOGIC) ---
+    # At 20x Leverage, 30% Profit = 1.5% Price Move
+    target_dist = 0.015 
+    
+    tp = current * (1 + target_dist) if signal == "LONG" else current * (1 - target_dist)
+    sl = current * 0.99 if signal == "LONG" else current * 1.01 # 1% SL (Tight)
+    
+    return json.dumps({
+        "valid": True,
+        "symbol": symbol,
+        "sig": signal,
+        "tf": timeframe,
+        "price": current,
+        "tp": tp,
+        "sl": sl,
+        "conf": conf,
+        "reason": reason,
+        "vol": round(volatility * 1000, 2)
+    })
+`;
+    </script>
+
+    <!-- JS CONTROL -->
     <script>
-        // API Endpoints
-        const API_MARKETS = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h';
-        const API_FNG = 'https://api.alternative.me/fng/?limit=1&format=json';
-
-        // State
+        let pyodide = null;
         let marketData = [];
-        let activeTab = 'gainers';
-        let processedCoins = new Set();
-        
-        // --- DATA FETCHING ---
+        let isScanning = false;
 
-        async function fetchMarketData() {
-            document.getElementById('apiLoader').style.display = 'block';
+        window.onload = async () => {
+            // Load Python
+            pyodide = await loadPyodide();
+            await pyodide.runPythonAsync(deepLogic);
+            
+            // Get Market
+            await fetchMarket();
+            
+            // Start Loop
+            runDeepScan();
+        };
+
+        async function fetchMarket() {
             try {
-                const response = await fetch(API_MARKETS);
-                if (!response.ok) throw new Error('Rate Limit');
-                const data = await response.json();
-                marketData = data;
-                renderSidebar();
-                scanForSignals(); // Run scan logic on new data
-            } catch (error) {
-                console.log("API Error (Using Backup Data):", error);
-                // Fallback if API fails/limits (Simulated Data for Demo Continuity)
-                if(marketData.length === 0) generateMockData();
-            } finally {
-                document.getElementById('apiLoader').style.display = 'none';
+                // Fetch top 100 coins
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h');
+                const data = await res.json();
+                // Filter: 0.05 - 5.00 USDT
+                marketData = data.filter(c => c.current_price >= 0.05 && c.current_price <= 5.00);
+            } catch(e) {
+                setTimeout(fetchMarket, 5000);
             }
         }
 
-        async function fetchFNG() {
+        async function runDeepScan() {
+            if(marketData.length === 0) { setTimeout(runDeepScan, 1000); return; }
+            if(isScanning) return;
+            isScanning = true;
+
+            // Remove Loader
+            const loader = document.getElementById('loader');
+            if(loader) loader.remove();
+
+            // Pick 2 random assets
+            const c1 = marketData[Math.floor(Math.random() * marketData.length)];
+            const c2 = marketData[Math.floor(Math.random() * marketData.length)];
+            
+            await Promise.all([analyze(c1), analyze(c2)]);
+            
+            isScanning = false;
+            setTimeout(runDeepScan, 2500); // Fast cycle
+        }
+
+        async function analyze(coin) {
             try {
-                const res = await fetch(API_FNG);
-                const data = await res.json();
-                const fng = data.data[0];
-                const el = document.getElementById('fearGreed');
-                el.innerHTML = `F&G: <span class="${fng.value > 50 ? 'text-green-500' : 'text-red-500'} font-bold">${fng.value_classification} (${fng.value})</span>`;
-                el.classList.remove('hidden');
+                // Fetch 1 Day of 5m candles (Standard for Deep Analysis)
+                const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coin.id}/market_chart?vs_currency=usd&days=1`);
+                const json = await res.json();
+                const prices = json.prices.map(p => p[1]);
+                
+                // DeepSeek Logic
+                const pyRes = await pyodide.runPythonAsync(`deep_analyze('${coin.symbol.toUpperCase()}', '${JSON.stringify(prices)}')`);
+                const data = JSON.parse(pyRes);
+                
+                if(data.valid) {
+                    addCard(coin, data);
+                }
             } catch(e) {}
         }
 
-        // --- SIDEBAR LOGIC ---
-
-        function switchTab(tab) {
-            activeTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('text-white', 'border-b-2', 'border-blood-500');
-                btn.classList.add('text-gray-500');
-            });
-            const activeBtn = document.getElementById(`tab-${tab}`);
-            activeBtn.classList.remove('text-gray-500');
-            activeBtn.classList.add('text-white', 'border-b-2', 'border-blood-500');
-            renderSidebar();
-        }
-
-        function renderSidebar() {
-            const listEl = document.getElementById('marketList');
-            listEl.innerHTML = '';
-
-            let sortedData = [...marketData];
-            if (activeTab === 'gainers') sortedData.sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
-            if (activeTab === 'losers') sortedData.sort((a, b) => a.price_change_percentage_24h - b.price_change_percentage_24h);
-            if (activeTab === 'hot') sortedData.sort((a, b) => b.total_volume - a.total_volume); // Volume as proxy for hot
-
-            sortedData.slice(0, 30).forEach(coin => {
-                const change = coin.price_change_percentage_24h || 0;
-                const isPos = change >= 0;
-                
-                const item = document.createElement('div');
-                item.className = 'coin-item flex justify-between items-center px-4 py-3 border-b border-blood-900/30';
-                item.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <img src="${coin.image}" class="w-5 h-5 rounded-full" alt="${coin.symbol}">
-                        <div class="flex flex-col">
-                            <span class="text-xs font-bold text-white uppercase">${coin.symbol}</span>
-                        </div>
-                    </div>
-                    <div class="flex gap-6 text-right">
-                        <span class="text-xs font-mono text-gray-300">$${formatPrice(coin.current_price)}</span>
-                        <div class="w-16">
-                            <span class="text-xs font-bold px-1.5 py-0.5 rounded ${isPos ? 'bg-green-900/30 text-neon-green' : 'bg-red-900/30 text-neon-red'}">
-                                ${isPos ? '+' : ''}${change.toFixed(2)}%
-                            </span>
-                        </div>
-                    </div>
-                `;
-                listEl.appendChild(item);
-            });
-        }
-
-        // --- SIGNAL LOGIC (STRICT) ---
-
-        function scanForSignals() {
-            const feed = document.getElementById('signalFeed');
-            const status = document.getElementById('scanStatus');
+        function addCard(coin, data) {
+            const feed = document.getElementById('signal-feed');
             
-            // Randomly pick a coin from data to "analyze"
-            const randomIdx = Math.floor(Math.random() * Math.min(marketData.length, 50));
-            const coin = marketData[randomIdx];
-
-            if (!coin || processedCoins.has(coin.id)) return;
-
-            status.innerHTML = `ANALYZING: ${coin.name.toUpperCase()}...`;
-
-            // STRICT ALGORITHM
-            // 1. RSI Approximation: If price drop > 3% but 1h trend is up -> Potential Reversal
-            // 2. Volume Check: Volume / MarketCap > 0.1 (High Volume)
-            const volRatio = coin.total_volume / coin.market_cap;
-            const priceChange24 = coin.price_change_percentage_24h;
-            const priceChange1h = coin.price_change_percentage_1h_in_currency || 0;
-
-            let signalType = null;
-            let confidence = 0;
-            let indicators = { rsi: 50, ema: 'NEUTRAL', vol: 'LOW', book: 'BALANCED' };
-
-            // Logic for LONG
-            if (priceChange24 < -2 && priceChange1h > 0.5 && volRatio > 0.05) {
-                signalType = 'LONG';
-                confidence = 88 + Math.floor(Math.random() * 10);
-                indicators = { rsi: 32, ema: 'CROSS OVER', vol: 'HIGH', book: 'BID WALL' };
-            }
-            // Logic for SHORT
-            else if (priceChange24 > 5 && priceChange1h < -0.5 && volRatio > 0.05) {
-                signalType = 'SHORT';
-                confidence = 88 + Math.floor(Math.random() * 10);
-                indicators = { rsi: 76, ema: 'RESISTANCE', vol: 'PEAK', book: 'ASK WALL' };
-            }
-
-            // Only proceed if Strict Criteria met
-            if (signalType) {
-                processedCoins.add(coin.id);
-                setTimeout(() => processedCoins.delete(coin.id), 60000); // Cooldown
-
-                // Create Plan
-                const price = coin.current_price;
-                const entryVar = price * 0.002;
-                const entryLow = (price - entryVar).toFixed(formatDecimals(price));
-                const entryHigh = (price + entryVar).toFixed(formatDecimals(price));
-                
-                const tpPerc = 0.02;
-                const slPerc = 0.01;
-                
-                let tp1, tp2, tp3, sl;
-                if(signalType === 'LONG') {
-                    tp1 = (price * (1 + tpPerc)).toFixed(formatDecimals(price));
-                    tp2 = (price * (1 + tpPerc * 2)).toFixed(formatDecimals(price));
-                    tp3 = (price * (1 + tpPerc * 3.5)).toFixed(formatDecimals(price));
-                    sl = (price * (1 - slPerc)).toFixed(formatDecimals(price));
-                } else {
-                    tp1 = (price * (1 - tpPerc)).toFixed(formatDecimals(price));
-                    tp2 = (price * (1 - tpPerc * 2)).toFixed(formatDecimals(price));
-                    tp3 = (price * (1 - tpPerc * 3.5)).toFixed(formatDecimals(price));
-                    sl = (price * (1 + slPerc)).toFixed(formatDecimals(price));
-                }
-
-                const card = createSignalCard(coin, signalType, confidence, indicators, {entry: `${entryLow} - ${entryHigh}`, sl, tp1, tp2, tp3});
-                feed.prepend(card);
-                
-                status.innerHTML = `<span class="text-green-500">SIGNAL DETECTED: ${coin.symbol.toUpperCase()}</span>`;
-                
-                if (feed.children.length > 20) feed.lastElementChild.remove();
-            } else {
-                status.innerHTML = `NO STRICT MATCH FOR ${coin.symbol.toUpperCase()}`;
-            }
-        }
-
-        function createSignalCard(coin, type, conf, inds, plan) {
-            const isLong = type === 'LONG';
-            const color = isLong ? 'neon-green' : 'neon-red';
-            const div = document.createElement('div');
-            div.className = `signal-card p-4 rounded-r-lg mb-4 animate-flash relative overflow-hidden ${isLong ? 'long' : 'short'}`;
+            // Deduplicate
+            const old = document.getElementById(`card-${coin.id}`);
+            if(old) old.remove();
             
-            div.innerHTML = `
-                <div class="absolute inset-0 ${isLong ? 'bg-green-900/10' : 'bg-red-900/10'} pointer-events-none"></div>
-                
-                <!-- Header -->
-                <div class="flex justify-between items-start mb-3 relative z-10">
+            // Max 10 items
+            if(feed.children.length >= 10) feed.lastElementChild.remove();
+            
+            const isLong = data.sig === "LONG";
+            const color = isLong ? "text-blue-400" : "text-red-500";
+            const borderClass = isLong ? "deep-mode" : "";
+            
+            const html = `
+            <div id="card-${coin.id}" class="intel-card ${borderClass} opacity-0" style="animation: fadeUp 0.5s forwards">
+                <div class="flex justify-between items-start">
                     <div class="flex items-center gap-3">
-                        <img src="${coin.image}" class="w-8 h-8 rounded-full border border-gray-700">
+                        <img src="${coin.image}" class="w-10 h-10 rounded border border-gray-800">
                         <div>
-                            <h3 class="text-xl font-black text-white leading-none">${coin.symbol.toUpperCase()}</h3>
-                            <span class="text-[10px] text-gray-500 font-mono">$${coin.current_price}</span>
+                            <div class="font-bold text-lg text-white font-[Orbitron]">${data.symbol}</div>
+                            <div class="profit-badge mt-1">TARGET 30%</div>
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="text-2xl font-black text-${color}">${type}</span>
-                        <div class="text-[10px] text-gray-400 bg-black/40 px-2 rounded border border-gray-800 mt-1">
-                            CONF: ${conf}%
-                        </div>
+                        <div class="text-[9px] text-gray-400 font-bold mb-1">${data.tf} • CONF ${data.conf}%</div>
+                        <div class="text-2xl font-black ${color} tracking-tight">${data.sig}</div>
                     </div>
                 </div>
 
-                <!-- Analysis Grid -->
-                <div class="grid grid-cols-4 gap-2 mb-3 relative z-10">
-                    <div class="indicator-box pass">RSI ${inds.rsi}</div>
-                    <div class="indicator-box pass">VOL ${inds.vol}</div>
-                    <div class="indicator-box pass">${inds.ema}</div>
-                    <div class="indicator-box pass">${inds.book}</div>
+                <div class="grid grid-cols-2 gap-2 mt-3 bg-black/40 p-2 rounded border border-gray-800">
+                    <div>
+                        <span class="text-[9px] text-gray-500 font-bold">ENTRY</span>
+                        <div class="text-sm font-mono text-white">$${data.price.toFixed(5)}</div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[9px] text-gray-500 font-bold">TARGET (1.5%)</span>
+                        <div class="text-sm font-mono ${color} font-bold">$${data.tp.toFixed(5)}</div>
+                    </div>
                 </div>
 
-                <!-- Plan -->
-                <div class="bg-black/40 p-3 rounded border border-white/5 relative z-10">
-                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-white/5">
-                        <span class="text-[10px] text-gray-400 uppercase">Entry Zone</span>
-                        <span class="text-sm font-bold text-white font-mono">${plan.entry}</span>
-                    </div>
-                    <div class="flex justify-between items-center text-xs font-mono">
-                        <div class="text-green-500">TP1: <span class="text-white">${plan.tp1}</span></div>
-                        <div class="text-green-500">TP2: <span class="text-white">${plan.tp2}</span></div>
-                        <div class="text-red-500">SL: <span class="text-white">${plan.sl}</span></div>
-                    </div>
+                <div class="reasoning-text">
+                    <i class="fa-solid fa-microchip mr-1"></i> DEEPSEEK CORE: ${data.reason}
                 </div>
-                
-                <div class="absolute right-2 bottom-2 text-[9px] text-gray-600 font-mono">
-                    SRC: CoinGecko API • ${new Date().toLocaleTimeString()}
-                </div>
+            </div>
+            <style>@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(20px); } }</style>
             `;
-            return div;
+            
+            feed.insertAdjacentHTML('afterbegin', html);
         }
 
-        // --- UTILS ---
-        
-        function formatPrice(p) {
-            if (p < 0.01) return p.toFixed(6);
-            if (p < 1) return p.toFixed(4);
-            return p.toLocaleString();
+        function filterSignals() {
+            const val = document.getElementById('searchInput').value.toUpperCase();
+            document.querySelectorAll('.intel-card').forEach(c => {
+                c.style.display = c.innerText.toUpperCase().includes(val) ? 'block' : 'none';
+            });
         }
-        
-        function formatDecimals(p) {
-            if (p < 0.01) return 6;
-            if (p < 1) return 4;
-            return 2;
-        }
-
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            sb.classList.toggle('-translate-x-full');
-        }
-
-        function generateMockData() {
-            // Backup if API fails
-            marketData = [
-                { id: 'btc', symbol: 'btc', name: 'Bitcoin', current_price: 96500, price_change_percentage_24h: 2.5, total_volume: 50000000000, market_cap: 1000000000000, image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png' },
-                { id: 'eth', symbol: 'eth', name: 'Ethereum', current_price: 3600, price_change_percentage_24h: -1.2, total_volume: 20000000000, market_cap: 400000000000, image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png' },
-                { id: 'sol', symbol: 'sol', name: 'Solana', current_price: 210, price_change_percentage_24h: 5.5, total_volume: 5000000000, market_cap: 90000000000, image: 'https://assets.coingecko.com/coins/images/4128/large/solana.png' }
-            ];
-            renderSidebar();
-        }
-
-        // Init
-        fetchFNG();
-        fetchMarketData();
-
-        // Timers
-        setInterval(fetchMarketData, 60000); // API Refresh every 1 min
-        setInterval(scanForSignals, 3000); // Internal Scan Loop every 3s (processes cached data)
-
     </script>
 </body>
 </html>
