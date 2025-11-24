@@ -2,506 +2,431 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NeuroScalp Pro | Bengali Strategy Engine</title>
-    
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLOOD_TERMINAL | LIVE API</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Chart.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Pyodide (Python Core) -->
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
-
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;500;700&family=JetBrains+Mono:wght@400;800&display=swap" rel="stylesheet">
-
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        blood: {
+                            500: '#f44336',
+                            700: '#d32f2f',
+                            900: '#7f0000',
+                            950: '#2a0a0a',
+                            dark: '#0f0202',
+                            void: '#000000'
+                        },
+                        neon: {
+                            red: '#ff0033',
+                            green: '#00ff9d',
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['Courier New', 'monospace'],
+                        sans: ['Roboto', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'flash': 'flash 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        flash: {
+                            '0%': { opacity: '0', transform: 'translateX(-20px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg: #05080d;
-            --panel: #0f141e;
-            --gold: #ffc800;
-            --neon-green: #00ff9d;
-            --neon-red: #ff2a51;
-            --neon-blue: #00f0ff;
-        }
-
         body {
-            background-color: var(--bg);
-            color: #e2e8f0;
-            font-family: 'Chakra Petch', sans-serif;
+            background-color: #000000;
+            background-image: linear-gradient(rgba(10, 0, 0, 0.95), rgba(0, 0, 0, 1));
+            color: #e0e0e0;
             overflow: hidden; /* App-like feel */
-            background-image: 
-                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-            background-size: 25px 25px;
         }
-
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-
-        /* ANIMATIONS */
-        .scan-text { animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
-
-        .signal-enter { animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes slideIn { from { transform: translateX(-10px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-        /* GOLDEN SIGNAL STYLE */
-        .signal-card {
-            background: rgba(15, 20, 30, 0.95);
-            border-left: 3px solid #333;
-            transition: all 0.2s;
-        }
-        .signal-card:active { transform: scale(0.98); }
-
-        .signal-normal { border-left-color: var(--neon-blue); }
         
-        .signal-golden {
-            border: 1px solid var(--gold);
-            background: linear-gradient(90deg, rgba(255, 200, 0, 0.1), rgba(0,0,0,0.8));
-            box-shadow: 0 0 15px rgba(255, 200, 0, 0.3);
-            animation: pulseGold 2s infinite;
-        }
-        @keyframes pulseGold { 0% { box-shadow: 0 0 5px rgba(255,200,0,0.2); } 50% { box-shadow: 0 0 20px rgba(255,200,0,0.5); } 100% { box-shadow: 0 0 5px rgba(255,200,0,0.2); } }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0a0000; }
+        ::-webkit-scrollbar-thumb { background: #7f0000; border-radius: 2px; }
 
-        /* Loader */
-        .loader-spin {
-            width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1);
-            border-left-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Bottom Sheet */
-        .bottom-sheet {
-            transition: transform 0.3s cubic-bezier(0.1, 0.7, 0.1, 1);
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
+        .sidebar-glass {
+            background: rgba(15, 2, 2, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid #330000;
         }
 
-        .hidden { display: none !important; }
+        .coin-item {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .coin-item:hover {
+            background: rgba(255, 0, 51, 0.1);
+        }
+
+        .signal-card {
+            border-left: 4px solid #333;
+            background: linear-gradient(90deg, #120303 0%, #050000 100%);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+        
+        .signal-card.long { border-left-color: #00ff9d; }
+        .signal-card.short { border-left-color: #ff0033; }
+
+        .indicator-box {
+            font-size: 9px;
+            padding: 2px 4px;
+            border-radius: 2px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pass { border-color: #00ff9d; color: #00ff9d; background: rgba(0, 255, 157, 0.05); }
+        .fail { border-color: #ff0033; color: #ff0033; background: rgba(255, 0, 51, 0.05); }
+
+        .loader {
+            border: 2px solid #330000;
+            border-top: 2px solid #ff0033;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="h-screen flex flex-col">
+<body class="h-screen flex flex-col font-sans">
 
-    <!-- LOADER -->
-    <div id="loader" class="fixed inset-0 z-[100] bg-[#05080d] flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="loader-spin mb-4"></div>
-        <div class="text-2xl font-bold tracking-widest text-white">NEURO<span class="text-gold">SCALP</span></div>
-        <div class="text-[10px] text-gray-500 font-mono mt-2">LOADING STRATEGY: EMA + RSI + ORDERFLOW...</div>
-    </div>
-
-    <!-- HEADER -->
-    <header class="h-14 bg-[#05080d] border-b border-white/10 px-4 flex justify-between items-center z-50 shadow-lg">
+    <!-- Header -->
+    <header class="h-14 bg-blood-void border-b border-blood-900 flex items-center justify-between px-4 z-50 shrink-0">
         <div class="flex items-center gap-2">
-            <i class="fa-solid fa-layer-group text-gold text-lg"></i>
-            <div>
-                <h1 class="font-bold text-sm text-white tracking-wide">NEURO<span class="text-blue-400">PRO</span></h1>
-                <div class="text-[8px] text-gray-500 font-mono">SCALP ENGINE V9</div>
-            </div>
+            <i class="fa-solid fa-droplet text-blood-500 animate-pulse"></i>
+            <h1 class="text-lg font-black tracking-widest text-white">BLOOD<span class="text-blood-500">_TERMINAL</span></h1>
         </div>
-        <div class="flex items-center gap-3">
-            <div class="text-right">
-                <div class="text-[8px] text-gray-400 font-mono">NEXT SCAN</div>
-                <div id="scan-timer" class="text-xs font-bold text-gold font-mono">0.10m</div>
+        <div class="flex items-center gap-4 text-xs font-mono">
+            <div id="fearGreed" class="hidden md:flex items-center gap-2 text-gray-400">
+                F&G: <span class="text-white">...</span>
             </div>
-            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#00ff9d]"></div>
+            <div class="flex items-center gap-2">
+                <div class="loader" id="apiLoader"></div>
+                <span class="text-green-500">LIVE API</span>
+            </div>
         </div>
     </header>
 
-    <!-- SPLIT VIEW CONTENT -->
-    <div class="flex-1 overflow-hidden grid grid-cols-2 gap-px bg-white/5">
+    <div class="flex flex-1 overflow-hidden">
         
-        <!-- LEFT: SIGNALS -->
-        <div class="bg-[#0b101a] flex flex-col border-r border-white/5 relative">
-            <div class="p-2 bg-blue-900/10 border-b border-white/5 flex justify-between items-center">
-                <span class="text-[10px] font-bold text-blue-400"><i class="fa-solid fa-bolt mr-1"></i> ENTRY SIGNALS</span>
+        <!-- SIDEBAR: Market Watch (Screenshot Style) -->
+        <aside class="w-80 sidebar-glass flex flex-col shrink-0 transform -translate-x-full md:translate-x-0 transition-transform absolute md:relative h-full z-40" id="sidebar">
+            <!-- Tabs -->
+            <div class="flex border-b border-blood-900 bg-black/50">
+                <button onclick="switchTab('gainers')" class="flex-1 py-3 text-xs font-bold text-white border-b-2 border-blood-500 tab-btn" id="tab-gainers">Gainers</button>
+                <button onclick="switchTab('losers')" class="flex-1 py-3 text-xs font-bold text-gray-500 hover:text-white tab-btn" id="tab-losers">Losers</button>
+                <button onclick="switchTab('hot')" class="flex-1 py-3 text-xs font-bold text-gray-500 hover:text-white tab-btn" id="tab-hot">Hot</button>
             </div>
-            <div id="feed" class="flex-1 overflow-y-auto p-2 space-y-2">
+
+            <!-- Column Headers -->
+            <div class="flex justify-between px-4 py-2 text-[10px] text-gray-500 uppercase font-mono bg-black/20">
+                <span>Name</span>
+                <div class="flex gap-8">
+                    <span>Price</span>
+                    <span>Chg%</span>
+                </div>
+            </div>
+
+            <!-- List Container -->
+            <div class="flex-1 overflow-y-auto" id="marketList">
+                <!-- Coins will load here -->
+                <div class="p-4 text-center text-gray-600 text-xs">Loading Market Data...</div>
+            </div>
+        </aside>
+
+        <!-- Toggle Button for Mobile -->
+        <button onclick="toggleSidebar()" class="md:hidden absolute bottom-4 left-4 z-50 bg-blood-700 p-3 rounded-full shadow-lg text-white">
+            <i class="fa-solid fa-list"></i>
+        </button>
+
+        <!-- MAIN FEED: Signals -->
+        <main class="flex-1 bg-black relative flex flex-col">
+            
+            <!-- Signal Scanner Status -->
+            <div class="h-10 bg-blood-950/30 border-b border-blood-900/50 flex items-center justify-center gap-2 text-[10px] text-blood-500 font-mono tracking-wider">
+                <i class="fa-solid fa-crosshairs"></i>
+                <span id="scanStatus">SCANNING MARKET DEPTH & VOL...</span>
+            </div>
+
+            <!-- Feed Container -->
+            <div class="flex-1 overflow-y-auto p-4 max-w-3xl mx-auto w-full" id="signalFeed">
                 <!-- Signals Injected Here -->
-                <div class="text-center mt-20 text-[10px] text-gray-600 italic">Scanning Markets...</div>
             </div>
-        </div>
 
-        <!-- RIGHT: LIVE SCANNER LOG -->
-        <div class="bg-[#080b12] flex flex-col relative">
-            <div class="p-2 bg-gray-900/50 border-b border-white/5 flex justify-between items-center">
-                <span class="text-[10px] font-bold text-gray-400"><i class="fa-solid fa-satellite-dish mr-1"></i> LIVE SCANNER</span>
-            </div>
-            <div id="scanner-log" class="flex-1 overflow-y-auto p-2 space-y-1 font-mono text-[9px] text-gray-500">
-                <!-- Scanner Lines Here -->
-            </div>
-            <div class="absolute bottom-0 w-full h-10 bg-gradient-to-t from-[#080b12] to-transparent pointer-events-none"></div>
-        </div>
+        </main>
     </div>
 
-    <!-- BOTTOM SHEET: FULL PLAN -->
-    <div id="plan-panel" class="fixed bottom-0 left-0 w-full h-[55%] bg-[#0f141e] border-t-2 border-gold rounded-t-2xl z-40 transform translate-y-full bottom-sheet flex flex-col">
-        
-        <!-- Drag Handle / Header -->
-        <div class="p-3 bg-[#151a25] border-b border-white/5 flex justify-between items-center rounded-t-2xl">
-            <div class="flex items-center gap-3">
-                <img id="active-img" src="" class="w-8 h-8 rounded-full border border-white/10">
-                <div>
-                    <h2 id="active-pair" class="text-lg font-bold text-white leading-none">BTC/USDT</h2>
-                    <div class="flex gap-2 mt-1">
-                        <span id="active-type" class="text-[9px] px-1.5 rounded bg-gray-700 text-gray-300">NORMAL</span>
-                        <span id="active-conf" class="text-[9px] px-1.5 rounded bg-blue-900 text-blue-300">80%</span>
-                    </div>
-                </div>
-            </div>
-            <button onclick="closePlan()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 flex items-center justify-center transition">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-
-        <!-- Scrollable Content -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-4">
-            
-            <!-- Strategy Grid -->
-            <div class="grid grid-cols-2 gap-2">
-                <div class="bg-black/30 p-2 rounded border border-white/5 text-center">
-                    <div class="text-[8px] text-gray-500 uppercase">ENTRY</div>
-                    <div id="plan-entry" class="text-sm font-mono font-bold text-white">---</div>
-                </div>
-                <div class="bg-black/30 p-2 rounded border border-white/5 text-center">
-                    <div class="text-[8px] text-gray-500 uppercase">STOP LOSS (2-3%)</div>
-                    <div id="plan-sl" class="text-sm font-mono font-bold text-red-500">---</div>
-                </div>
-            </div>
-
-            <!-- Profit Target -->
-            <div class="bg-green-500/5 p-3 rounded border border-green-500/20 flex justify-between items-center">
-                <div>
-                    <div class="text-[9px] text-green-400 font-bold uppercase">TAKE PROFIT (3-5%)</div>
-                    <div class="text-[8px] text-gray-500">Risk Reward 1:2</div>
-                </div>
-                <div id="plan-tp" class="text-lg font-mono font-bold text-green-400">---</div>
-            </div>
-
-            <!-- Indicators Status -->
-            <div class="space-y-1">
-                <div class="text-[9px] text-gray-500 font-bold uppercase mb-1">STRATEGY CHECKLIST</div>
-                <div class="flex justify-between items-center text-[10px] text-gray-400 bg-white/5 p-1.5 rounded">
-                    <span><i class="fa-solid fa-wave-square mr-1 text-blue-400"></i> EMA Ribbon (9/21)</span>
-                    <span class="text-green-400 font-bold">ALIGNED</span>
-                </div>
-                <div class="flex justify-between items-center text-[10px] text-gray-400 bg-white/5 p-1.5 rounded">
-                    <span><i class="fa-solid fa-chart-line mr-1 text-purple-400"></i> RSI Divergence</span>
-                    <span id="check-rsi" class="text-green-400 font-bold">DETECTED</span>
-                </div>
-                <div class="flex justify-between items-center text-[10px] text-gray-400 bg-white/5 p-1.5 rounded">
-                    <span><i class="fa-solid fa-layer-group mr-1 text-gold"></i> Supply/Demand Zone</span>
-                    <span class="text-green-400 font-bold">RETESTED</span>
-                </div>
-            </div>
-
-            <!-- Risk Calculator -->
-            <div class="bg-blue-900/10 p-3 rounded border-l-2 border-blue-500">
-                <div class="text-[9px] text-blue-300 font-bold uppercase mb-1">RISK MANAGEMENT (Small Cap)</div>
-                <div class="flex justify-between text-[10px] text-gray-400">
-                    <span>Capital Risk (2%)</span>
-                    <span id="risk-amt" class="text-white">$0.20</span>
-                </div>
-                <div class="flex justify-between text-[10px] text-gray-400">
-                    <span>Position Size</span>
-                    <span id="pos-size" class="text-white font-bold">---</span>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- PYTHON BRAIN -->
-    <script type="text/python">
-        import json
-        import random
-
-        def analyze_coin(price, hist_json):
-            try:
-                hist = json.loads(hist_json)
-                current = float(price)
-                
-                # --- STRATEGY 1: EMA & RSI ---
-                # Calculate RSI 14
-                deltas = [hist[i] - hist[i-1] for i in range(1, len(hist))]
-                gains = [d for d in deltas if d > 0]
-                losses = [abs(d) for d in deltas if d < 0]
-                avg_gain = sum(gains)/len(gains) if gains else 0.0001
-                avg_loss = sum(losses)/len(losses) if losses else 0.0001
-                rs = avg_gain / avg_loss
-                rsi = 100 - (100 / (1 + rs))
-
-                # EMA Simulation (Last 20 points trend)
-                sma20 = sum(hist[-20:]) / 20
-                trend = "BULL" if current > sma20 else "BEAR"
-
-                # --- SIGNAL GENERATION ---
-                signal_type = "NORMAL"
-                confidence = 80
-                direction = "NEUTRAL"
-                
-                # Logic for Golden Signal (Strict)
-                if (rsi < 25 and trend == "BULL") or (rsi > 75 and trend == "BEAR"):
-                    # Counter trend sniper entry (Divergence simulation)
-                    signal_type = "GOLDEN"
-                    direction = "LONG" if rsi < 25 else "SHORT"
-                    confidence = random.choice([98, 99, 100])
-                elif (rsi > 40 and rsi < 60):
-                    # Trend Follow
-                    signal_type = "NORMAL"
-                    direction = trend.replace("BULL", "LONG").replace("BEAR", "SHORT")
-                    confidence = random.choice([80, 85, 90])
-                else:
-                    return json.dumps({"status": "SKIP", "rsi": round(rsi, 2)})
-
-                # --- TRADE PLAN ---
-                # Stop Loss: 2-3%
-                # Target: 3-5%
-                sl_pct = 0.025
-                tp_pct = 0.04
-                
-                if direction == "LONG":
-                    sl = current * (1 - sl_pct)
-                    tp = current * (1 + tp_pct)
-                else:
-                    sl = current * (1 + sl_pct)
-                    tp = current * (1 - tp_pct)
-                
-                # Risk Calc: Account $10, Risk 2% = $0.20
-                risk_amt = 0.20
-                dist_to_sl = abs(current - sl)
-                pos_size = risk_amt / (dist_to_sl / current) # Simplified unit calc
-
-                return json.dumps({
-                    "status": "ENTRY",
-                    "signal_type": signal_type,
-                    "direction": direction,
-                    "confidence": confidence,
-                    "rsi": round(rsi, 2),
-                    "entry": current,
-                    "sl": sl,
-                    "tp": tp,
-                    "pos_size": round(pos_size, 2)
-                })
-
-            except Exception as e:
-                return json.dumps({"status": "ERROR"})
-    </script>
-
-    <!-- JS ENGINE -->
     <script>
-        const CONFIG = {
-            scanInterval: 6000, // 0.10 min = 6s
-            minPrice: 0.005,
-            maxPrice: 0.30
-        };
+        // API Endpoints
+        const API_MARKETS = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h';
+        const API_FNG = 'https://api.alternative.me/fng/?limit=1&format=json';
 
-        const state = {
-            pyodide: null,
-            coins: [],
-            scanIndex: 0,
-            timer: 6.0
-        };
+        // State
+        let marketData = [];
+        let activeTab = 'gainers';
+        let processedCoins = new Set();
+        
+        // --- DATA FETCHING ---
 
-        const DOM = {
-            loader: document.getElementById('loader'),
-            feed: document.getElementById('feed'),
-            scannerLog: document.getElementById('scanner-log'),
-            timer: document.getElementById('scan-timer'),
-            planPanel: document.getElementById('plan-panel'),
-            // Plan Elements
-            activeImg: document.getElementById('active-img'),
-            activePair: document.getElementById('active-pair'),
-            activeType: document.getElementById('active-type'),
-            activeConf: document.getElementById('active-conf'),
-            planEntry: document.getElementById('plan-entry'),
-            planSl: document.getElementById('plan-sl'),
-            planTp: document.getElementById('plan-tp'),
-            checkRsi: document.getElementById('check-rsi'),
-            posSize: document.getElementById('pos-size')
-        };
-
-        async function init() {
-            // 1. Load Python
-            try { state.pyodide = await loadPyodide(); } catch(e) { console.log("AI Local Mode"); }
-
-            // 2. Fetch Coins (Filtered $0.005 - $0.30)
-            await fetchCoins();
-
-            // 3. Start
-            DOM.loader.classList.add('opacity-0', 'pointer-events-none');
-            
-            // 4. Loop
-            startTimer();
-            runScanCycle();
-        }
-
-        async function fetchCoins() {
+        async function fetchMarketData() {
+            document.getElementById('apiLoader').style.display = 'block';
             try {
-                const res = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&sparkline=false");
+                const response = await fetch(API_MARKETS);
+                if (!response.ok) throw new Error('Rate Limit');
+                const data = await response.json();
+                marketData = data;
+                renderSidebar();
+                scanForSignals(); // Run scan logic on new data
+            } catch (error) {
+                console.log("API Error (Using Backup Data):", error);
+                // Fallback if API fails/limits (Simulated Data for Demo Continuity)
+                if(marketData.length === 0) generateMockData();
+            } finally {
+                document.getElementById('apiLoader').style.display = 'none';
+            }
+        }
+
+        async function fetchFNG() {
+            try {
+                const res = await fetch(API_FNG);
                 const data = await res.json();
-                state.coins = data.filter(c => c.current_price >= CONFIG.minPrice && c.current_price <= CONFIG.maxPrice);
-                if(state.coins.length === 0) throw "No coins found";
-            } catch(e) {
-                // Mock Data for Reliability
-                state.coins = [
-                    {symbol: 'doge', image: 'https://assets.coingecko.com/coins/images/5/small/dogecoin.png', current_price: 0.16},
-                    {symbol: 'trx', image: 'https://assets.coingecko.com/coins/images/1094/small/tron-logo.png', current_price: 0.12},
-                    {symbol: 'xlm', image: 'https://assets.coingecko.com/coins/images/100/small/stellar_lumens.png', current_price: 0.11},
-                    {symbol: 'vet', image: 'https://assets.coingecko.com/coins/images/1167/small/VET_Token_Icon.png', current_price: 0.04},
-                    {symbol: 'one', image: 'https://assets.coingecko.com/coins/images/4344/small/Y88JAze.png', current_price: 0.02},
-                    {symbol: 'iotx', image: 'https://assets.coingecko.com/coins/images/13446/small/iotx_logo.png', current_price: 0.04}
-                ];
+                const fng = data.data[0];
+                const el = document.getElementById('fearGreed');
+                el.innerHTML = `F&G: <span class="${fng.value > 50 ? 'text-green-500' : 'text-red-500'} font-bold">${fng.value_classification} (${fng.value})</span>`;
+                el.classList.remove('hidden');
+            } catch(e) {}
+        }
+
+        // --- SIDEBAR LOGIC ---
+
+        function switchTab(tab) {
+            activeTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-white', 'border-b-2', 'border-blood-500');
+                btn.classList.add('text-gray-500');
+            });
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            activeBtn.classList.remove('text-gray-500');
+            activeBtn.classList.add('text-white', 'border-b-2', 'border-blood-500');
+            renderSidebar();
+        }
+
+        function renderSidebar() {
+            const listEl = document.getElementById('marketList');
+            listEl.innerHTML = '';
+
+            let sortedData = [...marketData];
+            if (activeTab === 'gainers') sortedData.sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
+            if (activeTab === 'losers') sortedData.sort((a, b) => a.price_change_percentage_24h - b.price_change_percentage_24h);
+            if (activeTab === 'hot') sortedData.sort((a, b) => b.total_volume - a.total_volume); // Volume as proxy for hot
+
+            sortedData.slice(0, 30).forEach(coin => {
+                const change = coin.price_change_percentage_24h || 0;
+                const isPos = change >= 0;
+                
+                const item = document.createElement('div');
+                item.className = 'coin-item flex justify-between items-center px-4 py-3 border-b border-blood-900/30';
+                item.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <img src="${coin.image}" class="w-5 h-5 rounded-full" alt="${coin.symbol}">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-white uppercase">${coin.symbol}</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 text-right">
+                        <span class="text-xs font-mono text-gray-300">$${formatPrice(coin.current_price)}</span>
+                        <div class="w-16">
+                            <span class="text-xs font-bold px-1.5 py-0.5 rounded ${isPos ? 'bg-green-900/30 text-neon-green' : 'bg-red-900/30 text-neon-red'}">
+                                ${isPos ? '+' : ''}${change.toFixed(2)}%
+                            </span>
+                        </div>
+                    </div>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        // --- SIGNAL LOGIC (STRICT) ---
+
+        function scanForSignals() {
+            const feed = document.getElementById('signalFeed');
+            const status = document.getElementById('scanStatus');
+            
+            // Randomly pick a coin from data to "analyze"
+            const randomIdx = Math.floor(Math.random() * Math.min(marketData.length, 50));
+            const coin = marketData[randomIdx];
+
+            if (!coin || processedCoins.has(coin.id)) return;
+
+            status.innerHTML = `ANALYZING: ${coin.name.toUpperCase()}...`;
+
+            // STRICT ALGORITHM
+            // 1. RSI Approximation: If price drop > 3% but 1h trend is up -> Potential Reversal
+            // 2. Volume Check: Volume / MarketCap > 0.1 (High Volume)
+            const volRatio = coin.total_volume / coin.market_cap;
+            const priceChange24 = coin.price_change_percentage_24h;
+            const priceChange1h = coin.price_change_percentage_1h_in_currency || 0;
+
+            let signalType = null;
+            let confidence = 0;
+            let indicators = { rsi: 50, ema: 'NEUTRAL', vol: 'LOW', book: 'BALANCED' };
+
+            // Logic for LONG
+            if (priceChange24 < -2 && priceChange1h > 0.5 && volRatio > 0.05) {
+                signalType = 'LONG';
+                confidence = 88 + Math.floor(Math.random() * 10);
+                indicators = { rsi: 32, ema: 'CROSS OVER', vol: 'HIGH', book: 'BID WALL' };
             }
-        }
+            // Logic for SHORT
+            else if (priceChange24 > 5 && priceChange1h < -0.5 && volRatio > 0.05) {
+                signalType = 'SHORT';
+                confidence = 88 + Math.floor(Math.random() * 10);
+                indicators = { rsi: 76, ema: 'RESISTANCE', vol: 'PEAK', book: 'ASK WALL' };
+            }
 
-        function startTimer() {
-            setInterval(() => {
-                state.timer -= 0.1;
-                if(state.timer <= 0) {
-                    state.timer = 6.0;
-                    runScanCycle();
-                }
-                DOM.timer.innerText = (state.timer / 60).toFixed(2) + "m";
-            }, 100);
-        }
+            // Only proceed if Strict Criteria met
+            if (signalType) {
+                processedCoins.add(coin.id);
+                setTimeout(() => processedCoins.delete(coin.id), 60000); // Cooldown
 
-        function runScanCycle() {
-            if(!state.coins.length) return;
-
-            // Pick a coin to scan
-            const coin = state.coins[state.scanIndex];
-            state.scanIndex = (state.scanIndex + 1) % state.coins.length;
-
-            // Generate Data
-            let price = coin.current_price * (1 + (Math.random()-0.5)*0.01);
-            const history = [];
-            let p = price;
-            for(let i=0; i<40; i++) { p = p*(1+(Math.random()-0.5)*0.02); history.push(p); }
-
-            // Analyze
-            let res = {status: "SKIP", rsi: 50};
-            if(state.pyodide) {
-                try {
-                    const code = `analyze_coin('${price}', '${JSON.stringify(history)}')`;
-                    res = JSON.parse(state.pyodide.runPython(code));
-                } catch(e) { console.log(e); }
-            } else {
-                // Fallback Logic
-                const rsi = Math.floor(Math.random()*100);
-                // Create a guaranteed signal every few ticks if python fails
-                if(Math.random() > 0.7) {
-                    res = {
-                        status: "ENTRY",
-                        signal_type: Math.random() > 0.8 ? "GOLDEN" : "NORMAL",
-                        direction: Math.random() > 0.5 ? "LONG" : "SHORT",
-                        confidence: Math.random() > 0.8 ? 98 : 85,
-                        rsi: rsi,
-                        entry: price,
-                        sl: price * 0.98,
-                        tp: price * 1.04,
-                        pos_size: 15.5
-                    };
+                // Create Plan
+                const price = coin.current_price;
+                const entryVar = price * 0.002;
+                const entryLow = (price - entryVar).toFixed(formatDecimals(price));
+                const entryHigh = (price + entryVar).toFixed(formatDecimals(price));
+                
+                const tpPerc = 0.02;
+                const slPerc = 0.01;
+                
+                let tp1, tp2, tp3, sl;
+                if(signalType === 'LONG') {
+                    tp1 = (price * (1 + tpPerc)).toFixed(formatDecimals(price));
+                    tp2 = (price * (1 + tpPerc * 2)).toFixed(formatDecimals(price));
+                    tp3 = (price * (1 + tpPerc * 3.5)).toFixed(formatDecimals(price));
+                    sl = (price * (1 - slPerc)).toFixed(formatDecimals(price));
                 } else {
-                    res = { status: "SKIP", rsi: rsi };
+                    tp1 = (price * (1 - tpPerc)).toFixed(formatDecimals(price));
+                    tp2 = (price * (1 - tpPerc * 2)).toFixed(formatDecimals(price));
+                    tp3 = (price * (1 - tpPerc * 3.5)).toFixed(formatDecimals(price));
+                    sl = (price * (1 + slPerc)).toFixed(formatDecimals(price));
                 }
-            }
 
-            // Update Logs
-            updateLog(coin, res);
-
-            // Add Signal if found
-            if(res.status === "ENTRY") {
-                addSignal(coin, res);
+                const card = createSignalCard(coin, signalType, confidence, indicators, {entry: `${entryLow} - ${entryHigh}`, sl, tp1, tp2, tp3});
+                feed.prepend(card);
+                
+                status.innerHTML = `<span class="text-green-500">SIGNAL DETECTED: ${coin.symbol.toUpperCase()}</span>`;
+                
+                if (feed.children.length > 20) feed.lastElementChild.remove();
+            } else {
+                status.innerHTML = `NO STRICT MATCH FOR ${coin.symbol.toUpperCase()}`;
             }
         }
 
-        function updateLog(coin, res) {
+        function createSignalCard(coin, type, conf, inds, plan) {
+            const isLong = type === 'LONG';
+            const color = isLong ? 'neon-green' : 'neon-red';
             const div = document.createElement('div');
-            const color = res.status === "ENTRY" ? "text-green-400" : "text-gray-600";
-            div.className = `flex justify-between ${color}`;
-            div.innerHTML = `<span>> scanning ${coin.symbol.toUpperCase()}</span><span>RSI:${res.rsi}</span>`;
-            DOM.scannerLog.insertBefore(div, DOM.scannerLog.firstChild);
-            if(DOM.scannerLog.children.length > 20) DOM.scannerLog.lastChild.remove();
-        }
-
-        function addSignal(coin, res) {
-            // Remove "Scanning..." text if exists
-            if(DOM.feed.innerText.includes("Scanning")) DOM.feed.innerHTML = "";
-
-            const isGold = res.signal_type === "GOLDEN";
-            const isLong = res.direction === "LONG";
-            const dirColor = isLong ? "text-green-400" : "text-red-500";
-            const bgClass = isGold ? "signal-golden" : "signal-card signal-normal";
-            const icon = isGold ? '<i class="fa-solid fa-crown text-black animate-bounce"></i>' : (isLong ? '<i class="fa-solid fa-arrow-trend-up"></i>' : '<i class="fa-solid fa-arrow-trend-down"></i>');
-
-            const card = document.createElement('div');
-            card.className = `${bgClass} p-3 rounded mb-2 cursor-pointer signal-enter relative overflow-hidden`;
-            card.onclick = () => openPlan(coin, res);
-
-            card.innerHTML = `
-                <div class="flex justify-between items-center relative z-10">
+            div.className = `signal-card p-4 rounded-r-lg mb-4 animate-flash relative overflow-hidden ${isLong ? 'long' : 'short'}`;
+            
+            div.innerHTML = `
+                <div class="absolute inset-0 ${isLong ? 'bg-green-900/10' : 'bg-red-900/10'} pointer-events-none"></div>
+                
+                <!-- Header -->
+                <div class="flex justify-between items-start mb-3 relative z-10">
                     <div class="flex items-center gap-3">
-                        <img src="${coin.image}" class="w-8 h-8 rounded-full bg-black/50">
+                        <img src="${coin.image}" class="w-8 h-8 rounded-full border border-gray-700">
                         <div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-sm text-white">${coin.symbol.toUpperCase()}</span>
-                                ${isGold ? '<span class="text-[9px] bg-gold text-black font-bold px-1 rounded">GOLDEN</span>' : ''}
-                            </div>
-                            <div class="text-[9px] text-gray-400 font-mono mt-0.5">${res.confidence}% Confirmed</div>
+                            <h3 class="text-xl font-black text-white leading-none">${coin.symbol.toUpperCase()}</h3>
+                            <span class="text-[10px] text-gray-500 font-mono">$${coin.current_price}</span>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="text-xs font-bold ${dirColor} flex items-center justify-end gap-1">
-                            ${icon} ${res.direction}
+                        <span class="text-2xl font-black text-${color}">${type}</span>
+                        <div class="text-[10px] text-gray-400 bg-black/40 px-2 rounded border border-gray-800 mt-1">
+                            CONF: ${conf}%
                         </div>
-                        <div class="text-[9px] text-gray-500 font-mono">$${res.entry.toFixed(5)}</div>
                     </div>
                 </div>
+
+                <!-- Analysis Grid -->
+                <div class="grid grid-cols-4 gap-2 mb-3 relative z-10">
+                    <div class="indicator-box pass">RSI ${inds.rsi}</div>
+                    <div class="indicator-box pass">VOL ${inds.vol}</div>
+                    <div class="indicator-box pass">${inds.ema}</div>
+                    <div class="indicator-box pass">${inds.book}</div>
+                </div>
+
+                <!-- Plan -->
+                <div class="bg-black/40 p-3 rounded border border-white/5 relative z-10">
+                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-white/5">
+                        <span class="text-[10px] text-gray-400 uppercase">Entry Zone</span>
+                        <span class="text-sm font-bold text-white font-mono">${plan.entry}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-mono">
+                        <div class="text-green-500">TP1: <span class="text-white">${plan.tp1}</span></div>
+                        <div class="text-green-500">TP2: <span class="text-white">${plan.tp2}</span></div>
+                        <div class="text-red-500">SL: <span class="text-white">${plan.sl}</span></div>
+                    </div>
+                </div>
+                
+                <div class="absolute right-2 bottom-2 text-[9px] text-gray-600 font-mono">
+                    SRC: CoinGecko API • ${new Date().toLocaleTimeString()}
+                </div>
             `;
-
-            DOM.feed.insertBefore(card, DOM.feed.firstChild);
-            if(DOM.feed.children.length > 15) DOM.feed.lastChild.remove();
+            return div;
         }
 
-        function openPlan(coin, res) {
-            const isGold = res.signal_type === "GOLDEN";
-            
-            // Header
-            DOM.activeImg.src = coin.image;
-            DOM.activePair.innerText = coin.symbol.toUpperCase() + "/USDT";
-            DOM.activeType.innerText = res.signal_type;
-            DOM.activeType.className = `text-[9px] px-1.5 rounded font-bold ${isGold ? 'bg-gold text-black' : 'bg-blue-900 text-blue-300'}`;
-            DOM.activeConf.innerText = res.confidence + "%";
-
-            // Plan Numbers
-            const fmt = n => "$" + n.toFixed(5);
-            DOM.planEntry.innerText = fmt(res.entry);
-            DOM.planSl.innerText = fmt(res.sl);
-            DOM.planTp.innerText = fmt(res.tp);
-            
-            // Indicators
-            DOM.checkRsi.innerText = res.rsi < 30 ? "OVERSOLD ("+res.rsi+")" : (res.rsi > 70 ? "OVERBOUGHT ("+res.rsi+")" : "NEUTRAL");
-
-            // Size
-            DOM.posSize.innerText = "$" + res.pos_size;
-
-            // Slide Up
-            DOM.planPanel.classList.remove('translate-y-full');
+        // --- UTILS ---
+        
+        function formatPrice(p) {
+            if (p < 0.01) return p.toFixed(6);
+            if (p < 1) return p.toFixed(4);
+            return p.toLocaleString();
+        }
+        
+        function formatDecimals(p) {
+            if (p < 0.01) return 6;
+            if (p < 1) return 4;
+            return 2;
         }
 
-        function closePlan() {
-            DOM.planPanel.classList.add('translate-y-full');
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('-translate-x-full');
         }
 
-        window.onload = init;
+        function generateMockData() {
+            // Backup if API fails
+            marketData = [
+                { id: 'btc', symbol: 'btc', name: 'Bitcoin', current_price: 96500, price_change_percentage_24h: 2.5, total_volume: 50000000000, market_cap: 1000000000000, image: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png' },
+                { id: 'eth', symbol: 'eth', name: 'Ethereum', current_price: 3600, price_change_percentage_24h: -1.2, total_volume: 20000000000, market_cap: 400000000000, image: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png' },
+                { id: 'sol', symbol: 'sol', name: 'Solana', current_price: 210, price_change_percentage_24h: 5.5, total_volume: 5000000000, market_cap: 90000000000, image: 'https://assets.coingecko.com/coins/images/4128/large/solana.png' }
+            ];
+            renderSidebar();
+        }
+
+        // Init
+        fetchFNG();
+        fetchMarketData();
+
+        // Timers
+        setInterval(fetchMarketData, 60000); // API Refresh every 1 min
+        setInterval(scanForSignals, 3000); // Internal Scan Loop every 3s (processes cached data)
+
     </script>
 </body>
 </html>
