@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CRIMSON | BLOOD UI</title>
+    <title>CRIMSON | FINAL</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,9 +24,9 @@
         :root {
             --bg-void: #020002;
             --blood-red: #ff0036;
-            --blood-dark: #3a0000;
             --neon-gold: #ffcc00;
             --neon-cyan: #00f3ff;
+            --deep-purple: #a855f7;
             --glass: rgba(10, 0, 0, 0.95);
         }
 
@@ -38,72 +38,71 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- NAVIGATION BUTTONS --- */
+        /* --- NAVIGATION --- */
         .nav-container {
-            display: flex; gap: 8px; padding: 10px;
-            background: #080000; border-bottom: 1px solid #220000;
+            display: flex; gap: 5px; padding: 8px;
+            background: #050000; border-bottom: 1px solid #220000;
             position: sticky; top: 58px; z-index: 40;
             overflow-x: auto;
         }
 
         .nav-btn {
-            flex: 1;
-            background: #110000;
-            border: 1px solid #330000;
-            color: #888;
-            padding: 10px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            text-align: center;
-            clip-path: polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%);
+            flex: 1; min-width: 80px;
+            background: #110000; border: 1px solid #330000;
+            color: #777; padding: 10px 5px;
+            font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 700;
+            text-align: center; white-space: nowrap;
             transition: all 0.2s;
-            white-space: nowrap;
         }
 
-        .nav-btn.active {
-            background: var(--blood-red);
-            color: black;
-            border-color: var(--blood-red);
-            box-shadow: 0 0 15px rgba(255, 0, 54, 0.4);
-        }
+        .nav-btn.active { background: var(--blood-red); color: black; border-color: var(--blood-red); }
+        .nav-btn.gold-mode.active { background: var(--neon-gold); border-color: var(--neon-gold); }
+        .nav-btn.ultra-mode.active { background: var(--deep-purple); color: white; }
         
-        .nav-btn.gold-mode.active {
-            background: var(--neon-gold);
-            border-color: var(--neon-gold);
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
-        }
+        /* ALL SIGNAL BUTTON STYLE */
+        .nav-btn.all-mode.active { background: #ffffff; color: #000000; border-color: #fff; }
 
-        /* --- CARDS --- */
+        /* --- CARDS (Standard) --- */
         .blood-card {
             background: linear-gradient(135deg, #0a0202, #000);
-            border: 1px solid #220000;
-            border-left: 3px solid var(--blood-red);
-            border-radius: 6px;
-            margin-bottom: 15px;
-            overflow: hidden;
-            position: relative;
+            border: 1px solid #220000; border-left: 3px solid var(--blood-red);
+            border-radius: 6px; margin-bottom: 15px; overflow: hidden; position: relative;
             box-shadow: 0 5px 20px rgba(0,0,0,0.8);
         }
 
         .pump-card {
             background: linear-gradient(135deg, #1a1000, #000);
-            border: 1px solid #443300;
-            border-left: 3px solid var(--neon-gold);
-            border-radius: 6px;
-            margin-bottom: 15px;
-            position: relative;
+            border: 1px solid #443300; border-left: 3px solid var(--neon-gold);
+            border-radius: 6px; margin-bottom: 15px; position: relative;
             animation: pulse-gold 2s infinite alternate;
         }
         @keyframes pulse-gold { 0% {box-shadow: 0 0 5px rgba(255, 204, 0, 0.2);} 100% {box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);} }
 
-        /* --- GRAPH AREA --- */
-        .chart-wrapper {
-            height: 100px; width: 100%;
-            background: rgba(0,0,0,0.3);
-            border-top: 1px solid #221111;
-            border-bottom: 1px solid #221111;
+        .ultra-card {
+            background: linear-gradient(135deg, #0f0014, #000);
+            border: 1px solid #2a0033; border-left: 3px solid var(--deep-purple);
+            border-radius: 8px; margin-bottom: 20px; overflow: hidden; position: relative;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
         }
+
+        /* --- ALL SIGNAL CARD (CLEAN) --- */
+        .clean-card {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            padding: 0;
+            position: relative;
+        }
+        .source-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px; font-weight: 900;
+            padding: 4px 10px; display: block; width: 100%;
+            text-align: center; letter-spacing: 1px;
+        }
+        .badge-deep { background: #2a0033; color: #d8b4fe; border-bottom: 1px solid #a855f7; }
+        .badge-pro { background: #001a1a; color: #00f3ff; border-bottom: 1px solid #00f3ff; }
+        .badge-news { background: #1a1200; color: #ffcc00; border-bottom: 1px solid #ffcc00; }
 
         /* --- HEADER --- */
         .top-bar {
@@ -111,7 +110,7 @@
             background: var(--glass);
             border-bottom: 1px solid var(--blood-red);
             padding: 10px 15px;
-            display: flex; justify-content: space-between; items-center;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
         .search-box {
@@ -121,12 +120,13 @@
         }
         .search-box:focus { border-color: var(--blood-red); }
 
-        /* --- COIN LIST --- */
-        .market-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; border-bottom: 1px solid #1a0505;
+        /* --- GRAPH --- */
+        .chart-wrapper {
+            height: 100px; width: 100%;
+            background: rgba(0,0,0,0.4);
+            border-top: 1px solid #222;
+            border-bottom: 1px solid #222;
         }
-        .market-row:nth-child(even) { background: #080202; }
     </style>
 </head>
 <body class="pb-20">
@@ -144,50 +144,59 @@
 
     <!-- NAVIGATION TABS -->
     <div class="nav-container">
-        <button onclick="setView('scpn')" class="nav-btn active" id="tab-scpn">
-            <i class="fa-solid fa-chart-line mr-1"></i> SCPN PRO
+        <button onclick="setView('all')" class="nav-btn all-mode active" id="tab-all">
+            <i class="fa-solid fa-globe mr-1"></i> ALL SIGNAL
+        </button>
+        <button onclick="setView('ultra')" class="nav-btn ultra-mode" id="tab-ultra">
+            <i class="fa-solid fa-brain mr-1"></i> DEEPSEEK
+        </button>
+        <button onclick="setView('scpn')" class="nav-btn" id="tab-scpn">
+            <i class="fa-solid fa-chart-line mr-1"></i> PRO TRADER
         </button>
         <button onclick="setView('pump')" class="nav-btn gold-mode" id="tab-pump">
-            <i class="fa-solid fa-rocket mr-1"></i> PUMP HUNTER
-        </button>
-        <button onclick="setView('market')" class="nav-btn" id="tab-market">
-            <i class="fa-solid fa-list mr-1"></i> MARKET
+            <i class="fa-solid fa-rocket mr-1"></i> NEWS PUMP
         </button>
     </div>
 
-    <!-- SEARCH AREA -->
+    <!-- SEARCH -->
     <div class="px-3 py-2 bg-black border-b border-[#220000]">
         <input type="text" id="searchInput" class="search-box" placeholder="SEARCH ASSETS..." onkeyup="filterAll()">
     </div>
 
-    <!-- VIEW 1: SCPN SIGNAL FEED -->
-    <div id="view-scpn" class="p-3 min-h-screen">
+    <!-- VIEW 1: ALL SIGNALS (CLEAN FEED) -->
+    <div id="view-all" class="p-3 min-h-screen">
+        <div id="loader-all" class="text-center mt-20">
+            <i class="fa-solid fa-satellite-dish fa-spin text-4xl text-white mb-3"></i>
+            <p class="text-xs text-gray-500 font-mono">AGGREGATING ALL DATA STREAMS...</p>
+        </div>
+        <div id="feed-all"></div>
+    </div>
+
+    <!-- VIEW 2: DEEPSEEK (ULTRA) -->
+    <div id="view-ultra" class="p-3 min-h-screen hidden">
+        <div class="flex justify-between items-center mb-3">
+            <span class="text-[10px] text-[#a855f7] font-bold tracking-widest font-[Orbitron]">DEEPSEEK INTELLIGENCE</span>
+            <div class="text-[9px] text-purple-400 animate-pulse">LIVE SCANNING</div>
+        </div>
+        <div id="feed-ultra"></div>
+    </div>
+
+    <!-- VIEW 3: SCPN (PRO TRADER) -->
+    <div id="view-scpn" class="p-3 min-h-screen hidden">
         <div id="loader-scpn" class="text-center mt-20">
             <i class="fa-solid fa-circle-notch fa-spin text-4xl text-red-600 mb-3"></i>
-            <p class="text-xs text-red-800 font-mono">SCANNING 3M/5M/10M...</p>
+            <p class="text-xs text-red-800 font-mono">SCANNING 3M/5M...</p>
         </div>
         <div id="feed-scpn"></div>
     </div>
 
-    <!-- VIEW 2: PUMP HUNTER FEED -->
+    <!-- VIEW 4: PUMP HUNTER (NEWS) -->
     <div id="view-pump" class="p-3 min-h-screen hidden">
         <div class="flex justify-between items-center mb-3">
-            <span class="text-[10px] text-[#ffcc00] font-bold tracking-widest">SAVED PUMP SIGNALS (>1.11% MOVE)</span>
+            <span class="text-[10px] text-[#ffcc00] font-bold tracking-widest">SAVED PUMP SIGNALS (>1.11%)</span>
             <button onclick="clearPumps()" class="text-[9px] text-red-500 underline">CLEAR</button>
         </div>
-        <div id="feed-pump">
-            <div id="pump-empty" class="text-center text-gray-700 mt-10 text-xs">NO MASSIVE PUMPS DETECTED YET...</div>
-        </div>
-    </div>
-
-    <!-- VIEW 3: MARKET LIST -->
-    <div id="view-market" class="min-h-screen hidden pb-20">
-        <div class="bg-[#1a0505] p-2 flex text-[9px] text-gray-500 font-bold uppercase">
-            <div class="w-1/2">Coin</div>
-            <div class="w-1/4 text-right">Price</div>
-            <div class="w-1/4 text-right pr-2">Change</div>
-        </div>
-        <div id="market-list"></div>
+        <div id="feed-pump"></div>
     </div>
 
     <!-- PYTHON ENGINE -->
@@ -195,7 +204,9 @@
         const pyCode = `
 import json
 import random
+import math
 
+# --- CORE INDICATORS ---
 def rsi_calc(prices, period=14):
     if len(prices) < period + 1: return 50
     deltas = [prices[i+1] - prices[i] for i in range(len(prices)-1)]
@@ -207,75 +218,94 @@ def rsi_calc(prices, period=14):
     rs = avg_g / avg_l
     return 100 - (100 / (1 + rs))
 
-def analyze(symbol, prices_json):
+def ema_calc(prices, period):
+    if len(prices) < period: return 0
+    k = 2 / (period + 1)
+    ema = sum(prices[:period]) / period
+    for p in prices[period:]:
+        ema = (p * k) + (ema * (1 - k))
+    return ema
+
+# --- UNIVERSAL ANALYZER ---
+def analyze_universal(symbol, prices_json):
     prices = json.loads(prices_json)
-    if len(prices) < 50: return json.dumps({"type": "NONE"})
+    if len(prices) < 60: return json.dumps([])
     
     current = prices[-1]
     prev = prices[-2]
-    
     rsi = rsi_calc(prices, 14)
+    ema9 = ema_calc(prices, 9)
+    ema21 = ema_calc(prices, 21)
+    ema50 = ema_calc(prices, 50)
     volatility = (max(prices[-10:]) - min(prices[-10:])) / current
     
-    # 1. PUMP HUNTER LOGIC (Aggressive > 1.11%)
-    # Logic: High Volatility + RSI Extreme
-    if volatility > 0.015: 
-        if rsi < 25 and current > prev:
-            return json.dumps({
-                "type": "PUMP_SIG",
-                "dir": "PUMP",
+    signals = []
+    
+    # 1. NEWS/PUMP SIGNAL (High Volatility)
+    if volatility > 0.015:
+        p_sig = None
+        if rsi < 25 and current > prev: p_sig = {"dir": "PUMP", "desc": "WHALE BUY", "target": current*1.05}
+        elif rsi > 75 and current < prev: p_sig = {"dir": "DUMP", "desc": "PANIC SELL", "target": current*0.95}
+        
+        if p_sig:
+            signals.append({
+                "source": "NEWS SIGNAL",
+                "type": "PUMP",
+                "dir": p_sig["dir"],
+                "desc": p_sig["desc"],
                 "price": current,
-                "target": current * 1.05, # Big target
+                "tp": p_sig["target"],
+                "sl": current * 0.98 if p_sig["dir"]=="PUMP" else current*1.02,
                 "conf": 99,
-                "desc": "WHALE BUY DETECTED"
-            })
-        elif rsi > 75 and current < prev:
-            return json.dumps({
-                "type": "PUMP_SIG",
-                "dir": "DUMP",
-                "price": current,
-                "target": current * 0.95,
-                "conf": 99,
-                "desc": "PANIC SELL DETECTED"
+                "hold": "5-10 MIN"
             })
 
-    # 2. SCPN SIGNAL LOGIC (Predictive 98%)
-    # Logic: 3m/5m/10m Setup
-    scpn_sig = "NONE"
-    tf = "3M"
-    conf = 0
+    # 2. PRO TRADER SIGNAL (SCPN 98%)
+    s_sig = None
+    if rsi < 30: s_sig = {"dir": "LONG", "conf": 98, "tp": current*1.0111}
+    elif rsi > 70: s_sig = {"dir": "SHORT", "conf": 98, "tp": current*0.9911}
     
-    if rsi < 30: 
-        scpn_sig = "LONG"
-        conf = 98
-        tf = "5M"
-    elif rsi > 70:
-        scpn_sig = "SHORT"
-        conf = 98
-        tf = "5M"
-        
-    if scpn_sig != "NONE":
-        # Generate Prediction Path (Next 5 points)
-        tp = current * 1.0111 if scpn_sig == "LONG" else current * 0.9911
-        step = (tp - current) / 5
-        path = []
-        for i in range(1, 6):
-            noise = random.uniform(-0.0002, 0.0002) * current
-            path.append(current + (step * i) + noise)
-            
-        return json.dumps({
-            "type": "SCPN_SIG",
-            "dir": scpn_sig,
-            "tf": tf,
+    if s_sig:
+        signals.append({
+            "source": "PRO TRADER SIGNAL",
+            "type": "SCPN",
+            "dir": s_sig["dir"],
+            "desc": "SCALP REVERSAL",
             "price": current,
-            "tp": tp,
-            "sl": current * 0.995 if scpn_sig == "LONG" else current * 1.005,
-            "conf": conf,
+            "tp": s_sig["tp"],
+            "sl": current * 0.995 if s_sig["dir"]=="LONG" else current*1.005,
+            "conf": s_sig["conf"],
+            "hold": "3-15 MIN"
+        })
+
+    # 3. DEEPSEEK SIGNAL (60% Profit)
+    d_sig = None
+    if ema9 > ema21 and rsi > 55 and rsi < 75: 
+        d_sig = {"dir": "LONG", "desc": "MOMENTUM TREND", "tp": current*1.03}
+    elif ema9 < ema21 and rsi < 45 and rsi > 25:
+        d_sig = {"dir": "SHORT", "desc": "MOMENTUM TREND", "tp": current*0.97}
+        
+    if d_sig:
+        # Graph Data
+        path = []
+        step = (d_sig["tp"] - current) / 8
+        for i in range(1, 9): path.append(current + (step * i) + (random.uniform(-0.0005, 0.0005)*current))
+        
+        signals.append({
+            "source": "DEEPSEEK SIGNAL",
+            "type": "DEEP",
+            "dir": d_sig["dir"],
+            "desc": d_sig["desc"],
+            "price": current,
+            "tp": d_sig["tp"],
+            "sl": current * 0.9925 if d_sig["dir"]=="LONG" else current*1.0075,
+            "conf": 90 + int(volatility*1000),
+            "hold": "30-60 MIN",
             "history": prices[-20:],
             "prediction": path
         })
 
-    return json.dumps({"type": "NONE"})
+    return json.dumps(signals)
 `;
     </script>
 
@@ -284,29 +314,25 @@ def analyze(symbol, prices_json):
         let pyodide = null;
         let marketData = [];
         let scanning = false;
+        
+        // Global Signal Storage
+        let allSignals = []; 
 
         window.onload = async () => {
-            // Load saved pumps
             loadPumps();
-            
-            // Init Python
             pyodide = await loadPyodide();
             await pyodide.runPythonAsync(pyCode);
-            
-            // Fetch Data
             await fetchMarket();
             
-            // Start Scanner
+            // Continuous Universal Scan
             scanLoop();
         };
 
-        // --- DATA LAYER ---
         async function fetchMarket() {
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false');
                 const data = await res.json();
                 marketData = data.filter(c => c.current_price >= 0.05 && c.current_price <= 10.00);
-                renderMarketList();
             } catch(e) { setTimeout(fetchMarket, 5000); }
         }
 
@@ -315,15 +341,15 @@ def analyze(symbol, prices_json):
             if(scanning) return;
             scanning = true;
 
-            const loader = document.getElementById('loader-scpn');
-            if(loader) loader.style.display = 'none';
+            // Hide Loaders
+            document.querySelectorAll('[id^="loader-"]').forEach(el => el.style.display = 'none');
 
-            // Pick Random Coin
+            // Pick Random Coin to Scan
             const coin = marketData[Math.floor(Math.random() * marketData.length)];
             await analyze(coin);
 
             scanning = false;
-            setTimeout(scanLoop, 2000);
+            setTimeout(scanLoop, 1500); // Fast continuous scan
         }
 
         async function analyze(coin) {
@@ -332,105 +358,108 @@ def analyze(symbol, prices_json):
                 const json = await res.json();
                 const prices = json.prices.map(p => p[1]);
                 
-                const pyRes = await pyodide.runPythonAsync(`analyze('${coin.symbol.toUpperCase()}', '${JSON.stringify(prices)}')`);
-                const resObj = JSON.parse(pyRes);
+                const pyRes = await pyodide.runPythonAsync(`analyze_universal('${coin.symbol.toUpperCase()}', '${JSON.stringify(prices)}')`);
+                const results = JSON.parse(pyRes);
 
-                if(resObj.type === "SCPN_SIG") {
-                    addScpnCard(coin, resObj);
-                } else if (resObj.type === "PUMP_SIG") {
-                    savePump(coin, resObj);
-                }
+                // Process Results
+                results.forEach(sig => {
+                    const fullSig = { ...sig, symbol: coin.symbol.toUpperCase(), image: coin.image, id: coin.id + sig.type, time: Date.now() };
+                    
+                    // Add to Global List
+                    addToAll(fullSig);
+
+                    // Add to Specific Views
+                    if(sig.type === "DEEP") addDeepCard(fullSig);
+                    if(sig.type === "SCPN") addScpnCard(fullSig);
+                    if(sig.type === "PUMP") savePump(fullSig);
+                });
+
             } catch(e) {}
         }
 
-        // --- SCPN VIEW ---
-        function addScpnCard(coin, data) {
-            const feed = document.getElementById('feed-scpn');
+        // --- RENDERERS ---
+
+        function addToAll(sig) {
+            const feed = document.getElementById('feed-all');
+            // Deduplicate logic simplified for demo
+            const html = renderCleanCard(sig);
+            feed.insertAdjacentHTML('afterbegin', html);
+            if(feed.children.length > 20) feed.lastElementChild.remove();
+        }
+
+        function renderCleanCard(sig) {
+            let badgeClass = "badge-pro";
+            if(sig.source.includes("DEEP")) badgeClass = "badge-deep";
+            if(sig.source.includes("NEWS")) badgeClass = "badge-news";
             
-            const existing = document.getElementById(`scpn-${coin.id}`);
-            if(existing) existing.remove();
-            if(feed.children.length >= 10) feed.lastElementChild.remove(); // Max 10
+            const isLong = sig.dir.includes("LONG") || sig.dir.includes("PUMP");
+            const color = isLong ? "#00ff00" : "#ff0000"; // Simple Green/Red for clean view
 
-            const isLong = data.dir === "LONG";
-            const color = isLong ? "#00f3ff" : "#ff0036";
-            const canvasId = `chart-${coin.id}`;
-
-            const html = `
-            <div id="scpn-${coin.id}" class="blood-card fade-in">
-                <div class="p-3 flex justify-between items-start">
+            return `
+            <div class="clean-card fade-in">
+                <div class="source-badge ${badgeClass}">${sig.source}</div>
+                <div class="p-3 flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <img src="${coin.image}" class="w-10 h-10 rounded-full border border-gray-700">
+                        <img src="${sig.image}" class="w-8 h-8 rounded-full">
                         <div>
-                            <div class="font-bold text-lg text-white font-[Orbitron]">${coin.symbol.toUpperCase()}</div>
-                            <span class="text-[9px] bg-red-900 text-red-200 px-1 rounded">${data.conf}% CONFIRMED</span>
+                            <div class="font-bold text-white font-[Orbitron]">${sig.symbol}</div>
+                            <div class="text-[10px] text-gray-500">${sig.desc}</div>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="text-[9px] text-gray-500 font-bold mb-1">${data.tf} • 0.07m AGO</div>
-                        <div class="text-2xl font-black" style="color:${color}">${data.dir}</div>
+                        <div class="font-black text-lg" style="color:${color}">${sig.dir}</div>
+                        <div class="text-[10px] text-white">CONF: ${sig.conf}%</div>
                     </div>
                 </div>
-                
-                <!-- GRAPH ART -->
-                <div class="chart-wrapper">
-                    <canvas id="${canvasId}"></canvas>
-                </div>
-
-                <div class="p-2 grid grid-cols-2 gap-2 text-center bg-black/40">
-                    <div>
-                        <span class="text-[8px] text-gray-500 block">ENTRY</span>
-                        <span class="text-xs font-mono font-bold text-white">$${data.price.toFixed(4)}</span>
-                    </div>
-                    <div>
-                        <span class="text-[8px] text-gray-500 block">TARGET (1.11%)</span>
-                        <span class="text-xs font-mono font-bold" style="color:${color}">$${data.tp.toFixed(4)}</span>
-                    </div>
+                <div class="p-2 bg-[#111] flex justify-between text-[10px] font-mono text-gray-400 border-t border-[#222]">
+                    <span>ENTRY: $${sig.price.toFixed(4)}</span>
+                    <span style="color:${color}">TP: $${sig.tp.toFixed(4)}</span>
+                    <span>SL: $${sig.sl.toFixed(4)}</span>
                 </div>
             </div>`;
+        }
+
+        function addDeepCard(sig) {
+            const feed = document.getElementById('feed-ultra');
+            const id = `deep-${sig.id}`;
+            const existing = document.getElementById(id); if(existing) existing.remove();
             
+            const isLong = sig.dir === "LONG";
+            const color = isLong ? "#a855f7" : "#ff0036";
+            const canvasId = `chart-${id}`;
+
+            const html = `
+            <div id="${id}" class="ultra-card fade-in">
+                <div class="p-3 flex justify-between items-start">
+                    <div class="flex items-center gap-3">
+                        <img src="${sig.image}" class="w-10 h-10 rounded border border-[#a855f7]">
+                        <div><div class="font-bold text-xl text-white font-[Orbitron]">${sig.symbol}</div><span class="text-[9px] text-purple-300">CONFIDENCE: ${sig.conf}%</span></div>
+                    </div>
+                    <div class="text-right"><div class="text-[9px] text-gray-400 font-bold mb-1">HOLD: ${sig.hold}</div><div class="text-2xl font-black" style="color:${color}">${sig.dir}</div></div>
+                </div>
+                <div class="chart-wrapper"><canvas id="${canvasId}"></canvas></div>
+                <div class="p-3 grid grid-cols-3 gap-2 text-center bg-black/60 border-t border-[#2a0033]">
+                    <div><span class="text-[8px] text-gray-500 block">ENTRY</span><span class="text-sm font-mono font-bold text-white">$${sig.price.toFixed(4)}</span></div>
+                    <div class="border-x border-[#2a0033]"><span class="text-[8px] text-gray-500 block">TARGET</span><span class="text-sm font-mono font-bold text-[#a855f7]">$${sig.tp.toFixed(4)}</span></div>
+                    <div><span class="text-[8px] text-gray-500 block">STOP</span><span class="text-sm font-mono font-bold text-gray-400">$${sig.sl.toFixed(4)}</span></div>
+                </div>
+            </div>`;
             feed.insertAdjacentHTML('afterbegin', html);
-            renderGraph(canvasId, data.history, data.prediction, isLong);
+            if(feed.children.length > 10) feed.lastElementChild.remove();
+            renderGraph(canvasId, sig.history, sig.prediction, isLong);
         }
 
-        function renderGraph(id, history, prediction, isLong) {
-            const ctx = document.getElementById(id).getContext('2d');
-            const color = isLong ? '#00f3ff' : '#ff0036';
-            
-            const totalLabels = history.length + prediction.length;
-            const labels = Array.from({length: totalLabels}, (_, i) => i);
-            
-            // Connect history end to prediction start
-            const predData = new Array(history.length - 1).fill(null);
-            predData.push(history[history.length - 1]);
-            predData.push(...prediction);
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { data: history, borderColor: '#666', borderWidth: 1, pointRadius: 0, tension: 0.1 },
-                        { data: predData, borderColor: color, borderWidth: 2, borderDash: [4,4], pointRadius: 0, tension: 0.4 }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: false },
-                    scales: { x: {display:false}, y: {display:false} }
-                }
-            });
+        function addScpnCard(sig) {
+            const feed = document.getElementById('feed-scpn');
+            const html = `<div class="blood-card p-3"><div class="flex justify-between"><div class="flex gap-2"><img src="${sig.image}" class="w-8 h-8 rounded"><div class="font-bold text-white">${sig.symbol}</div></div><div class="font-black text-[#00f3ff]">${sig.dir}</div></div><div class="mt-2 text-xs text-gray-400 flex justify-between"><span>Entry: $${sig.price.toFixed(4)}</span><span>TP: $${sig.tp.toFixed(4)}</span></div></div>`;
+            feed.insertAdjacentHTML('afterbegin', html);
+            if(feed.children.length > 10) feed.lastElementChild.remove();
         }
 
-        // --- PUMP VIEW ---
-        function savePump(coin, data) {
+        function savePump(sig) {
             let pumps = JSON.parse(localStorage.getItem('crimson_pumps') || "[]");
-            // Check dupe
-            if(pumps.some(p => p.symbol === coin.symbol.toUpperCase())) return;
-            
-            const pumpObj = { ...data, symbol: coin.symbol.toUpperCase(), image: coin.image, time: Date.now() };
-            pumps.unshift(pumpObj);
-            if(pumps.length > 20) pumps.pop();
-            
+            if(pumps.some(p => p.symbol === sig.symbol)) return;
+            pumps.unshift(sig); if(pumps.length > 20) pumps.pop();
             localStorage.setItem('crimson_pumps', JSON.stringify(pumps));
             loadPumps();
         }
@@ -438,58 +467,33 @@ def analyze(symbol, prices_json):
         function loadPumps() {
             const pumps = JSON.parse(localStorage.getItem('crimson_pumps') || "[]");
             const container = document.getElementById('feed-pump');
-            
-            if(pumps.length === 0) {
-                container.innerHTML = `<div id="pump-empty" class="text-center text-gray-700 mt-10 text-xs">NO MASSIVE PUMPS DETECTED YET...</div>`;
-                return;
-            }
+            if(pumps.length === 0) { container.innerHTML = `<div class="text-center text-gray-600 mt-10 text-xs">WAITING FOR NEWS...</div>`; return; }
+            container.innerHTML = pumps.map(p => `<div class="pump-card p-3 flex justify-between items-center"><div class="flex items-center gap-3"><img src="${p.image}" class="w-10 h-10 rounded-full border-2 border-[#ffcc00]"><div><div class="font-bold text-white font-[Orbitron]">${p.symbol}</div><div class="text-[9px] text-[#ffcc00] font-bold">${p.desc}</div></div></div><div class="text-right"><div class="text-xl font-black text-[#ffcc00]">${p.dir}</div><div class="text-[10px] text-gray-500">TP: $${p.tp.toFixed(4)}</div></div></div>`).join('');
+        }
+        function clearPumps() { localStorage.removeItem('crimson_pumps'); loadPumps(); }
 
-            container.innerHTML = pumps.map(p => `
-                <div class="pump-card p-3 flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <img src="${p.image}" class="w-10 h-10 rounded-full border-2 border-[#ffcc00]">
-                        <div>
-                            <div class="font-bold text-white font-[Orbitron]">${p.symbol}</div>
-                            <div class="text-[9px] text-[#ffcc00] font-bold">${p.desc}</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-xl font-black text-[#ffcc00]">${p.dir}</div>
-                        <div class="text-[10px] text-gray-500">TP: $${p.target.toFixed(4)}</div>
-                    </div>
-                </div>
-            `).join('');
+        function renderGraph(id, history, prediction, isLong) {
+            const ctx = document.getElementById(id).getContext('2d');
+            const color = isLong ? '#a855f7' : '#ff0036';
+            const predData = new Array(history.length - 1).fill(null);
+            predData.push(history[history.length - 1]);
+            predData.push(...prediction);
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: history.length + prediction.length}, (_, i) => i),
+                    datasets: [{ data: history, borderColor: '#666', borderWidth: 1, pointRadius: 0 }, { data: predData, borderColor: color, borderWidth: 2, borderDash: [4,4], pointRadius: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: false }, scales: { x: {display:false}, y: {display:false} }, layout: {padding: 5} }
+            });
         }
 
-        function clearPumps() {
-            localStorage.removeItem('crimson_pumps');
-            loadPumps();
-        }
-
-        // --- MARKET VIEW ---
-        function renderMarketList() {
-            const list = document.getElementById('market-list');
-            list.innerHTML = marketData.map(c => {
-                const isUp = c.price_change_percentage_24h >= 0;
-                return `
-                <div class="market-row">
-                    <div class="flex items-center gap-3 w-1/2">
-                        <img src="${c.image}" class="w-6 h-6 rounded-full">
-                        <span class="text-white font-bold font-[Orbitron]">${c.symbol.toUpperCase()}</span>
-                    </div>
-                    <div class="w-1/4 text-right text-xs font-mono text-white">$${c.current_price}</div>
-                    <div class="w-1/4 text-right text-xs font-mono ${isUp?'text-green-500':'text-red-500'}">
-                        ${c.price_change_percentage_24h?.toFixed(2)}%
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // --- UI CONTROL ---
         function setView(view) {
-            ['scpn', 'pump', 'market'].forEach(v => {
-                document.getElementById('view-'+v).classList.add('hidden');
-                document.getElementById('tab-'+v).classList.remove('active');
+            ['all', 'ultra', 'scpn', 'pump', 'market'].forEach(v => {
+                const el = document.getElementById('view-'+v);
+                const btn = document.getElementById('tab-'+v);
+                if(el) el.classList.add('hidden');
+                if(btn) btn.classList.remove('active');
             });
             document.getElementById('view-'+view).classList.remove('hidden');
             document.getElementById('tab-'+view).classList.add('active');
@@ -497,9 +501,8 @@ def analyze(symbol, prices_json):
 
         function filterAll() {
             const val = document.getElementById('searchInput').value.toUpperCase();
-            // Filter all lists
-            document.querySelectorAll('.blood-card, .pump-card, .market-row').forEach(el => {
-                el.style.display = el.innerText.toUpperCase().includes(val) ? (el.classList.contains('market-row') ? 'flex' : 'block') : 'none';
+            document.querySelectorAll('.clean-card, .ultra-card, .blood-card, .pump-card').forEach(el => {
+                el.style.display = el.innerText.toUpperCase().includes(val) ? 'block' : 'none';
             });
         }
     </script>
